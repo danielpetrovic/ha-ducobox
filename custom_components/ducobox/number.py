@@ -32,7 +32,9 @@ async def async_setup_entry(
     if coordinator.data and coordinator.data.nodes:
         for node in coordinator.data.nodes:
             if node.temp is not None and node.temp != 0:
-                entities.append(DucoBoxTemperatureOffsetNumber(coordinator, node, entry))
+                entities.append(
+                    DucoBoxTemperatureOffsetNumber(coordinator, node, entry)
+                )
 
     # Fetch DucoBox main unit configuration (node 1)
     ducobox_config = await coordinator.api.async_get_node_config(1)
@@ -167,7 +169,9 @@ async def async_setup_entry(
             )
 
         # Add Manual speed levels for main DucoBox
-        for i, param in enumerate([ducobox_config.manual1, ducobox_config.manual2, ducobox_config.manual3], 1):
+        for i, param in enumerate(
+            [ducobox_config.manual1, ducobox_config.manual2, ducobox_config.manual3], 1
+        ):
             if param:
                 entities.append(
                     DucoBoxMainConfigNumber(
@@ -177,7 +181,11 @@ async def async_setup_entry(
                         f"manual{i}",
                         param,
                         PERCENTAGE,
-                        "mdi:fan-speed-1" if i == 1 else "mdi:fan-speed-2" if i == 2 else "mdi:fan-speed-3",
+                        "mdi:fan-speed-1"
+                        if i == 1
+                        else "mdi:fan-speed-2"
+                        if i == 2
+                        else "mdi:fan-speed-3",
                         mode=NumberMode.BOX,
                     )
                 )
@@ -239,7 +247,10 @@ async def async_setup_entry(
                         )
 
                     # Add Manual speed levels
-                    for i, param in enumerate([node_config.manual1, node_config.manual2, node_config.manual3], 1):
+                    for i, param in enumerate(
+                        [node_config.manual1, node_config.manual2, node_config.manual3],
+                        1,
+                    ):
                         if param:
                             entities.append(
                                 DucoBoxNodeConfigNumber(
@@ -250,7 +261,11 @@ async def async_setup_entry(
                                     f"manual{i}",
                                     param,
                                     PERCENTAGE,
-                                    "mdi:fan-speed-1" if i == 1 else "mdi:fan-speed-2" if i == 2 else "mdi:fan-speed-3",
+                                    "mdi:fan-speed-1"
+                                    if i == 1
+                                    else "mdi:fan-speed-2"
+                                    if i == 2
+                                    else "mdi:fan-speed-3",
                                     mode=NumberMode.BOX,
                                 )
                             )
@@ -290,7 +305,9 @@ async def async_setup_entry(
     async_add_entities(entities)
 
 
-class DucoBoxTemperatureOffsetNumber(CoordinatorEntity[DucoBoxCoordinator], NumberEntity):
+class DucoBoxTemperatureOffsetNumber(
+    CoordinatorEntity[DucoBoxCoordinator], NumberEntity
+):
     """Temperature offset number entity for a DucoBox node."""
 
     _attr_has_entity_name = True
@@ -449,7 +466,9 @@ class DucoBoxNodeConfigNumber(CoordinatorEntity[DucoBoxCoordinator], NumberEntit
     def native_value(self) -> int | float | None:
         """Return the current value."""
         # Return as int if it's a whole number to avoid decimal display
-        if self._current_value is not None and self._current_value == int(self._current_value):
+        if self._current_value is not None and self._current_value == int(
+            self._current_value
+        ):
             return int(self._current_value)
         return self._current_value
 

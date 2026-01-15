@@ -139,11 +139,11 @@ class DucoBoxNodeConfigSwitch(CoordinatorEntity[DucoBoxCoordinator], SwitchEntit
         """Return true if the switch is on."""
         return self._current_value
 
-    async def async_turn_on(self, **kwargs) -> None:  # noqa: ARG002
+    async def async_turn_on(self, **kwargs) -> None:
         """Turn the switch on."""
         await self._async_set_state(True)
 
-    async def async_turn_off(self, **kwargs) -> None:  # noqa: ARG002
+    async def async_turn_off(self, **kwargs) -> None:
         """Turn the switch off."""
         await self._async_set_state(False)
 
@@ -222,11 +222,11 @@ class DucoBoxMainConfigSwitch(CoordinatorEntity[DucoBoxCoordinator], SwitchEntit
         """Return true if the switch is on."""
         return self._current_value
 
-    async def async_turn_on(self, **kwargs) -> None:  # noqa: ARG002
+    async def async_turn_on(self, **kwargs) -> None:
         """Turn the switch on."""
         await self._async_set_state(True)
 
-    async def async_turn_off(self, **kwargs) -> None:  # noqa: ARG002
+    async def async_turn_off(self, **kwargs) -> None:
         """Turn the switch off."""
         await self._async_set_state(False)
 

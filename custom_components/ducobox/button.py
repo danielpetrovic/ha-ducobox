@@ -58,7 +58,9 @@ class DucoBoxFilterResetButton(CoordinatorEntity[DucoBoxCoordinator], ButtonEnti
         self._entry = entry
 
         # Set unique ID
-        self._attr_unique_id = f"{coordinator.config_entry.entry_id}_ducobox_filter_reset"
+        self._attr_unique_id = (
+            f"{coordinator.config_entry.entry_id}_ducobox_filter_reset"
+        )
 
         # Set translation key
         self._attr_translation_key = "ducobox_filter_reset"

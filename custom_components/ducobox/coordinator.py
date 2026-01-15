@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import asyncio
 import logging
 import time
 from datetime import timedelta
@@ -94,7 +93,7 @@ class DucoBoxCoordinator(DataUpdateCoordinator[DucoBoxData]):
                 # Use cached nodes if we didn't fetch new data
                 data.nodes = self._cached_nodes
 
-        except (asyncio.TimeoutError, ServerTimeoutError) as err:
+        except (TimeoutError, ServerTimeoutError) as err:
             # Timeout errors are common due to network issues - log at debug level
             # and only raise UpdateFailed without logging error
             _LOGGER.debug("Timeout fetching data from DucoBox: %s", err)

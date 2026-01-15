@@ -12,7 +12,6 @@ from homeassistant.components.sensor import (
     SensorEntityDescription,
     SensorStateClass,
 )
-from homeassistant.helpers.entity import EntityCategory
 from homeassistant.const import (
     CONCENTRATION_PARTS_PER_MILLION,
     CONF_HOST,
@@ -23,6 +22,7 @@ from homeassistant.const import (
 )
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.device_registry import DeviceInfo
+from homeassistant.helpers.entity import EntityCategory
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 from homeassistant.helpers.typing import StateType
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
@@ -52,7 +52,9 @@ SENSORS: tuple[DucoBoxSensorEntityDescription, ...] = (
         icon="mdi:timer-sand",
         value_fn=lambda data: (
             data.time_state_remain
-            if data.time_state_remain and data.time_state_remain > 0 and data.mode != "EXTN"
+            if data.time_state_remain
+            and data.time_state_remain > 0
+            and data.mode != "EXTN"
             else 0
         ),
     ),
@@ -99,14 +101,6 @@ SENSORS: tuple[DucoBoxSensorEntityDescription, ...] = (
         state_class=SensorStateClass.MEASUREMENT,
         value_fn=lambda data: data.rh,
     ),
-    DucoBoxSensorEntityDescription(
-        key="iaq_rh",
-        translation_key="iaq_rh",
-        native_unit_of_measurement=PERCENTAGE,
-        device_class=SensorDeviceClass.HUMIDITY,
-        state_class=SensorStateClass.MEASUREMENT,
-        value_fn=lambda data: data.iaq_rh,
-    ),
     # Energy info sensors
     DucoBoxSensorEntityDescription(
         key="temp_oda",
@@ -150,7 +144,9 @@ SENSORS: tuple[DucoBoxSensorEntityDescription, ...] = (
         native_unit_of_measurement=PERCENTAGE,
         state_class=SensorStateClass.MEASUREMENT,
         icon="mdi:valve",
-        value_fn=lambda data: data.energy_info.bypass_status if data.energy_info else None,
+        value_fn=lambda data: data.energy_info.bypass_status
+        if data.energy_info
+        else None,
     ),
     DucoBoxSensorEntityDescription(
         key="filter_remaining_time",
@@ -159,7 +155,9 @@ SENSORS: tuple[DucoBoxSensorEntityDescription, ...] = (
         device_class=SensorDeviceClass.DURATION,
         state_class=SensorStateClass.MEASUREMENT,
         icon="mdi:air-filter",
-        value_fn=lambda data: data.energy_info.filter_remaining_time if data.energy_info else None,
+        value_fn=lambda data: data.energy_info.filter_remaining_time
+        if data.energy_info
+        else None,
     ),
     DucoBoxSensorEntityDescription(
         key="supply_fan_speed",
@@ -167,7 +165,9 @@ SENSORS: tuple[DucoBoxSensorEntityDescription, ...] = (
         native_unit_of_measurement=REVOLUTIONS_PER_MINUTE,
         state_class=SensorStateClass.MEASUREMENT,
         icon="mdi:fan",
-        value_fn=lambda data: data.energy_info.supply_fan_speed if data.energy_info else None,
+        value_fn=lambda data: data.energy_info.supply_fan_speed
+        if data.energy_info
+        else None,
     ),
     DucoBoxSensorEntityDescription(
         key="supply_fan_pwm",
@@ -175,7 +175,9 @@ SENSORS: tuple[DucoBoxSensorEntityDescription, ...] = (
         native_unit_of_measurement=PERCENTAGE,
         state_class=SensorStateClass.MEASUREMENT,
         icon="mdi:gauge",
-        value_fn=lambda data: data.energy_info.supply_fan_pwm_percentage if data.energy_info else None,
+        value_fn=lambda data: data.energy_info.supply_fan_pwm_percentage
+        if data.energy_info
+        else None,
     ),
     DucoBoxSensorEntityDescription(
         key="exhaust_fan_speed",
@@ -183,7 +185,9 @@ SENSORS: tuple[DucoBoxSensorEntityDescription, ...] = (
         native_unit_of_measurement=REVOLUTIONS_PER_MINUTE,
         state_class=SensorStateClass.MEASUREMENT,
         icon="mdi:fan",
-        value_fn=lambda data: data.energy_info.exhaust_fan_speed if data.energy_info else None,
+        value_fn=lambda data: data.energy_info.exhaust_fan_speed
+        if data.energy_info
+        else None,
     ),
     DucoBoxSensorEntityDescription(
         key="exhaust_fan_pwm",
@@ -191,7 +195,9 @@ SENSORS: tuple[DucoBoxSensorEntityDescription, ...] = (
         native_unit_of_measurement=PERCENTAGE,
         state_class=SensorStateClass.MEASUREMENT,
         icon="mdi:gauge",
-        value_fn=lambda data: data.energy_info.exhaust_fan_pwm_percentage if data.energy_info else None,
+        value_fn=lambda data: data.energy_info.exhaust_fan_pwm_percentage
+        if data.energy_info
+        else None,
     ),
 )
 
@@ -222,9 +228,9 @@ async def async_setup_entry(
         for node in coordinator.data.nodes:
             # Check if this node has any actual sensors (not just diagnostic)
             has_sensors = (
-                (node.temp is not None and node.temp != 0) or
-                (node.co2 is not None and node.co2 > 0) or
-                (node.rh is not None and node.rh > 0)
+                (node.temp is not None and node.temp != 0)
+                or (node.co2 is not None and node.co2 > 0)
+                or (node.rh is not None and node.rh > 0)
             )
 
             # Skip nodes with no actual sensors (like UC devices)
@@ -377,7 +383,11 @@ class DucoBoxNodeSensor(CoordinatorEntity[DucoBoxCoordinator], SensorEntity):
     @property
     def extra_state_attributes(self) -> dict[str, any] | None:
         """Return additional state attributes for diagnostic sensors."""
-        if self._sensor_type != "rssi" or not self.coordinator.data or not self.coordinator.data.nodes:
+        if (
+            self._sensor_type != "rssi"
+            or not self.coordinator.data
+            or not self.coordinator.data.nodes
+        ):
             return None
 
         # Find the node in the current data

@@ -14,7 +14,7 @@
                     "host": "Host"
                 },
                 "data_description": {
-                    "host": "The hostname or IP address of your DucoBox device (Connectivity Board or Communication Print)."
+                    "host": "The hostname or IP address of your DucoBox Communication Print device."
                 }
             },
             "zeroconf_confirm": {

@@ -106,6 +106,5 @@ class DucoBoxData:
     mode: str | None = None
     flow_lvl_tgt: int | None = None
     rh: int | None = None
-    iaq_rh: int | None = None
     energy_info: DucoBoxEnergyInfo | None = None
     nodes: list[DucoBoxNodeData] = field(default_factory=list)

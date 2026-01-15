@@ -13,7 +13,6 @@ from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from . import DucoBoxConfigEntry
 from .const import DOMAIN
 from .coordinator import DucoBoxCoordinator
-from .entity import DucoBoxEntity
 
 
 async def async_setup_entry(

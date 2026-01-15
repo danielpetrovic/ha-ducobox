@@ -52,7 +52,11 @@ class DucoBoxFan(DucoBoxEntity, FanEntity):
     @property
     def is_on(self) -> bool:
         """Return true if the fan is on."""
-        return self.coordinator.data.state != PRESET_MODE_AWAY if self.coordinator.data else True
+        return (
+            self.coordinator.data.state != PRESET_MODE_AWAY
+            if self.coordinator.data
+            else True
+        )
 
     @property
     def percentage(self) -> int | None:
