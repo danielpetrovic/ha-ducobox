@@ -1,6 +1,6 @@
 # DucoBox integration for Home Assistant
 
-[![hacs_badge](https://img.shields.io/badge/HACS-Custom-41BDF5.svg)](https://github.com/hacs/integration)
+[![hacs_badge](https://img.shields.io/badge/HACS-Default-41BDF5.svg)](https://github.com/hacs/integration)
 [![GitHub Release](https://img.shields.io/github/release/danielpetrovic/ha-ducobox.svg)](https://github.com/danielpetrovic/ha-ducobox/releases)
 [![License](https://img.shields.io/github/license/danielpetrovic/ha-ducobox.svg)](LICENSE)
 
@@ -121,7 +121,20 @@ If you experience issues, please [create a GitHub issue](https://github.com/dani
 
 ## Installation
 
-### HACS (recommended)
+### Method 1: HACS (Recommended)
+
+The integration is available in the HACS default repository:
+
+1. Open HACS in your Home Assistant instance
+2. Go to "Integrations"
+3. Click "Explore & Download Repositories"
+4. Search for "DucoBox"
+5. Click "Download"
+6. Restart Home Assistant
+
+### Method 2: HACS Custom Repository (Alternative)
+
+For development versions or testing pre-release features:
 
 1. Open HACS in your Home Assistant instance
 2. Go to "Integrations"
@@ -133,11 +146,28 @@ If you experience issues, please [create a GitHub issue](https://github.com/dani
 8. Search for "DucoBox" and install it
 9. Restart Home Assistant
 
-### Manual installation
+### Method 3: Manual Installation
+
+**Option A: Download Release (Recommended)**
 
 1. Download the latest release from the [releases page](https://github.com/danielpetrovic/ha-ducobox/releases)
 2. Extract the `custom_components/ducobox` folder to your Home Assistant `custom_components` directory
 3. Restart Home Assistant
+
+**Option B: Git Clone (For Developers)**
+
+1. Clone the repository to your preferred location:
+   ```bash
+   cd /share/github
+   git clone https://github.com/danielpetrovic/ha-ducobox.git
+   ```
+2. Create a symlink from the integration to your Home Assistant `custom_components` directory:
+   ```bash
+   ln -s /share/github/ha-ducobox/custom_components/ducobox /config/custom_components/ducobox
+   ```
+3. Restart Home Assistant
+
+This approach allows you to maintain the repository separately and easily pull updates while keeping the integration available to Home Assistant.
 
 ## Configuration
 
