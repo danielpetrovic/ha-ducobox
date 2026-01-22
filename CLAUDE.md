@@ -523,9 +523,29 @@ if coordinator.data.new_field is not None:
 3. Entity reads data via `self.coordinator.data.field`
 4. Entity updates state automatically (coordinator notifies listeners)
 
+### Release Process
+
+**GitHub Release Naming Convention:**
+- Release title format: `DucoBox Integration v{VERSION}` (e.g., "DucoBox Integration v1.0.1")
+- Tag format: `v{VERSION}` (e.g., "v1.0.1")
+
+**Steps to Create a Release:**
+1. Update version in `custom_components/ducobox/manifest.json`
+2. Commit: `git commit -m "Bump version to {VERSION}"`
+3. Create tag: `git tag v{VERSION}`
+4. Push: `git push origin main && git push origin v{VERSION}`
+5. Create GitHub release: `gh release create v{VERSION} --title "DucoBox Integration v{VERSION}" --notes "Release notes here"`
+
+**HACS Note:** HACS displays the README from the release tag, not from the main branch. Documentation updates require a new release to be visible in HACS.
+
 ### Version History
 
-**v1.0.0** (Current - 2026-01-15)
+**v1.0.1** (2026-01-22)
+- Documentation updates for HACS default repository listing
+- Updated badges to reflect HACS default repository status
+- Expanded installation instructions
+
+**v1.0.0** (2026-01-15)
 - First independent release of danielpetrovic/ha-ducobox fork
 - ❌ **BREAKING:** Removed Connectivity Board 2.0 support
 - Rebranded as Communication Print-only integration
