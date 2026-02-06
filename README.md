@@ -192,6 +192,9 @@ If automatic discovery doesn't work or you prefer manual setup:
 
 The integration will detect your Communication Print device and set it up automatically.
 
+> [!NOTE]
+> Individual room nodes are automatically discovered and created based on the **Location** field configured for each node in your DucoBox Communication Print device. If no Location is set, the node will not be created.
+
 ### Device Structure
 
 The integration creates devices in the following structure:
