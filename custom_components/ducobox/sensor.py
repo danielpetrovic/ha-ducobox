@@ -428,6 +428,6 @@ class DucoBoxNodeSensor(CoordinatorEntity[DucoBoxCoordinator], SensorEntity):
                     attrs["hop_via_node"] = node.hop_via
                 if node.netw:
                     attrs["network_type"] = node.netw
-                return attrs if attrs else None
+                return attrs or None
 
         return None
