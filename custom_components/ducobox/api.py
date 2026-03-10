@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 import logging
 from abc import ABC, abstractmethod
 
@@ -133,6 +134,16 @@ class DucoCommunicationPrintApi(DucoApiBase):
 
     # Reverse mapping for setting states
     STATE_REVERSE_MAP = {v: k for k, v in STATE_MAP.items()}
+
+    # Re-run full node discovery scan every N node ticks to pick up nodes that
+    # were temporarily unreachable during the initial scan (e.g. weak RF).
+    _REDISCOVERY_INTERVAL = 10
+
+    def __init__(self, host: str, session: ClientSession) -> None:
+        """Initialize with node discovery cache."""
+        super().__init__(host, session)
+        self._discovered_node_ids: list[int] | None = None
+        self._discovery_tick = 0
 
     async def async_get_device_info(self) -> DucoBoxDeviceInfo:
         """
@@ -314,64 +325,95 @@ class DucoCommunicationPrintApi(DucoApiBase):
             _LOGGER.debug("Failed to get energy info: %s", err)
             return None
 
+    async def _fetch_node(self, node_id: int) -> DucoBoxNodeData | None:
+        """Fetch a single node's data. Returns None if node doesn't exist or errors."""
+        try:
+            url = f"{self._base_url}/nodeinfoget"
+            params = {"node": node_id}
+            response = await self.session.get(url, params=params, timeout=2)
+
+            if response.status == 200:
+                data = await response.json()
+
+                if data.get("location") and data.get("devtype"):
+                    return DucoBoxNodeData(
+                        node_id=node_id,
+                        location=data.get("location", f"Node {node_id}"),
+                        devtype=data.get("devtype", "Unknown"),
+                        temp=data.get("temp"),
+                        co2=data.get("co2"),
+                        rh=data.get("rh") if data.get("rh") and data.get("rh") > 0 else None,
+                        state=data.get("state"),
+                        mode=data.get("mode"),
+                        swversion=data.get("swversion"),
+                        serialnb=data.get("serialnb"),
+                        error=data.get("error"),
+                        ovrl=data.get("ovrl"),
+                        netw=data.get("netw"),
+                        cntdwn=data.get("cntdwn"),
+                        endtime=data.get("endtime"),
+                        rssi_n2m=data.get("rssi_n2m"),
+                        rssi_n2h=data.get("rssi_n2h"),
+                        hop_via=data.get("hop_via"),
+                        asso=data.get("asso"),
+                        cerr=data.get("cerr"),
+                    )
+        except Exception as err:  # noqa: BLE001
+            _LOGGER.debug("Failed to get node %s: %s", node_id, err)
+
+        return None
+
     async def async_get_nodes(self) -> list[DucoBoxNodeData]:
         """
         Get all node information from the DucoBox device.
+
+        On first call, discovers all nodes by scanning ranges in parallel.
+        Subsequent calls only poll the previously discovered node IDs.
 
         Returns:
             list[DucoBoxNodeData]: List of nodes with their data.
 
         """
-        nodes = []
+        if self._discovered_node_ids is not None:
+            self._discovery_tick += 1
+            if self._discovery_tick < self._REDISCOVERY_INTERVAL:
+                # Fast path: only poll known nodes
+                results = await asyncio.gather(
+                    *[self._fetch_node(nid) for nid in self._discovered_node_ids]
+                )
+                return [n for n in results if n is not None]
+            # Periodic re-discovery: reset counter and fall through to full scan
+            _LOGGER.debug("Running periodic node re-discovery (tick %d)", self._discovery_tick)
+            self._discovery_tick = 0
 
-        # Scan multiple ranges:
+        # Discovery scan: check all candidate ranges with limited concurrency
         # - 2-10: Common room sensors
         # - 50-100: Where box sensors (UCRH, etc.) are typically located
-        node_ranges = [range(2, 11), range(50, 101)]
+        # Semaphore limits concurrent requests to avoid overwhelming the DucoBox HTTP server
+        candidate_ids = list(range(2, 11)) + list(range(50, 101))
+        _LOGGER.debug("Scanning %d candidate node IDs for discovery", len(candidate_ids))
 
-        for node_range in node_ranges:
-            for node_id in node_range:
-                try:
-                    url = f"{self._base_url}/nodeinfoget"
-                    params = {"node": node_id}
-                    # Use shorter timeout for faster scanning
-                    response = await self.session.get(url, params=params, timeout=2)
+        semaphore = asyncio.Semaphore(5)
 
-                    if response.status == 200:
-                        data = await response.json()
+        async def bounded_fetch(nid: int) -> DucoBoxNodeData | None:
+            async with semaphore:
+                return await self._fetch_node(nid)
 
-                        # Check if this is a valid node (has location and devtype)
-                        if data.get("location") and data.get("devtype"):
-                            nodes.append(
-                                DucoBoxNodeData(
-                                    node_id=node_id,
-                                    location=data.get("location", f"Node {node_id}"),
-                                    devtype=data.get("devtype", "Unknown"),
-                                    temp=data.get("temp"),
-                                    co2=data.get("co2"),
-                                    rh=data.get("rh")
-                                    if data.get("rh") and data.get("rh") > 0
-                                    else None,
-                                    state=data.get("state"),
-                                    mode=data.get("mode"),
-                                    swversion=data.get("swversion"),
-                                    serialnb=data.get("serialnb"),
-                                    error=data.get("error"),
-                                    ovrl=data.get("ovrl"),
-                                    netw=data.get("netw"),
-                                    cntdwn=data.get("cntdwn"),
-                                    endtime=data.get("endtime"),
-                                    rssi_n2m=data.get("rssi_n2m"),
-                                    rssi_n2h=data.get("rssi_n2h"),
-                                    hop_via=data.get("hop_via"),
-                                    asso=data.get("asso"),
-                                    cerr=data.get("cerr"),
-                                )
-                            )
-                except Exception as err:  # noqa: BLE001
-                    _LOGGER.debug("Failed to get node %s: %s", node_id, err)
-                    continue
+        results = await asyncio.gather(*[bounded_fetch(nid) for nid in candidate_ids])
+        nodes = [n for n in results if n is not None]
+        new_ids = {n.node_id for n in nodes}
 
+        # Merge with previously known IDs so nodes that are temporarily unreachable
+        # during re-discovery don't disappear from the list.
+        if self._discovered_node_ids is not None:
+            merged = list(new_ids | set(self._discovered_node_ids))
+            if merged != self._discovered_node_ids:
+                _LOGGER.debug("Node list updated: %s → %s", self._discovered_node_ids, merged)
+            self._discovered_node_ids = merged
+        else:
+            self._discovered_node_ids = list(new_ids)
+
+        _LOGGER.debug("Discovered %d nodes: %s", len(nodes), self._discovered_node_ids)
         return nodes
 
     async def async_get_node_config(self, node_id: int) -> DucoBoxNodeConfig | None:

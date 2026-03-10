@@ -7,6 +7,7 @@ from dataclasses import dataclass
 from datetime import datetime
 
 from homeassistant.components.sensor import (
+    RestoreSensor,
     SensorDeviceClass,
     SensorEntity,
     SensorEntityDescription,
@@ -217,10 +218,17 @@ async def async_setup_entry(
         # Check if this sensor would have a value
         if coordinator.data:
             value = description.value_fn(coordinator.data)
-            # Only add sensor if it has a value or if it's a core sensor
-            # Core sensors are always added even if temporarily None
+            # Always add core sensors and energy sensors even if temporarily None.
+            # Energy sensors start None on first tick (nodes-only), but must be
+            # registered as coordinator listeners so they update on the energy tick.
             is_core_sensor = description.key in {"state", "mode", "flow_lvl_tgt", "rh"}
-            if value is not None or is_core_sensor:
+            is_energy_sensor = description.key in {
+                "temp_oda", "temp_sup", "temp_eta", "temp_eha",
+                "bypass_status", "filter_remaining_time",
+                "supply_fan_speed", "supply_fan_pwm",
+                "exhaust_fan_speed", "exhaust_fan_pwm",
+            }
+            if value is not None or is_core_sensor or is_energy_sensor:
                 entities.append(DucoBoxSensor(coordinator, description))
 
     # Add room node sensors
@@ -253,7 +261,7 @@ async def async_setup_entry(
     async_add_entities(entities)
 
 
-class DucoBoxSensor(DucoBoxEntity, SensorEntity):
+class DucoBoxSensor(DucoBoxEntity, RestoreSensor):
     """Defines a DucoBox sensor."""
 
     entity_description: DucoBoxSensorEntityDescription
@@ -268,11 +276,23 @@ class DucoBoxSensor(DucoBoxEntity, SensorEntity):
 
         self._attr_unique_id = f"{coordinator.config_entry.entry_id}_{description.key}"
         self.entity_description = description
+        self._last_value: StateType | datetime | None = None
+
+    async def async_added_to_hass(self) -> None:
+        """Restore last known value on startup."""
+        # Restore BEFORE super() so _last_value is populated before CoordinatorEntity
+        # registers its listener and fires write_ha_state() immediately.
+        if (last_data := await self.async_get_last_sensor_data()) is not None:
+            self._last_value = last_data.native_value
+        await super().async_added_to_hass()
 
     @property
     def native_value(self) -> StateType | datetime:
-        """Return the state of the sensor."""
-        return self.entity_description.value_fn(self.coordinator.data)
+        """Return the state of the sensor, falling back to last known value."""
+        value = self.entity_description.value_fn(self.coordinator.data)
+        if value is not None:
+            self._last_value = value
+        return self._last_value
 
     @property
     def options(self) -> list[str] | None:
@@ -299,6 +319,7 @@ class DucoBoxNodeSensor(CoordinatorEntity[DucoBoxCoordinator], SensorEntity):
         self._node_id = node.node_id
         self._location = node.location
         self._sensor_type = sensor_type
+        self._last_value: StateType | None = None
 
         # Set unique ID
         self._attr_unique_id = (
@@ -354,7 +375,14 @@ class DucoBoxNodeSensor(CoordinatorEntity[DucoBoxCoordinator], SensorEntity):
 
     @property
     def native_value(self) -> StateType:
-        """Return the state of the sensor."""
+        """Return the state of the sensor, falling back to last known value."""
+        value = self._current_value()
+        if value is not None:
+            self._last_value = value
+        return self._last_value
+
+    def _current_value(self) -> StateType | None:
+        """Read the current value from coordinator data."""
         if not self.coordinator.data or not self.coordinator.data.nodes:
             return None
 

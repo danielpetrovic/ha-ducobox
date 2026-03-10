@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import logging
-import time
 from datetime import timedelta
 
 from aiohttp import ClientError, ServerTimeoutError
@@ -39,14 +38,13 @@ class DucoBoxCoordinator(DataUpdateCoordinator[DucoBoxData]):
             hass,
             logger=_LOGGER,
             name=DOMAIN,
-            update_interval=timedelta(seconds=15),
+            update_interval=SCAN_INTERVAL,
             config_entry=config_entry,
             always_update=False,
         )
         self.api = api
         self.config_entry = config_entry
-        self._last_energy_fetch = 0.0
-        self._last_nodes_fetch = 0.0
+        self._fetch_energy_next = False  # alternate: nodes first on startup, then energy, then nodes...
         self._cached_energy = None
         self._cached_nodes = []
 
@@ -63,14 +61,11 @@ class DucoBoxCoordinator(DataUpdateCoordinator[DucoBoxData]):
 
     async def _async_update_data(self) -> DucoBoxData:
         """Update the data."""
-        current_time = time.time()
-
-        # Determine what to fetch based on time since last fetch
-        # Box data: always fetch (every 15s with coordinator interval)
-        # Nodes: fetch if >9s since last fetch
-        # Energy: fetch if >60s since last fetch
-        fetch_nodes = (current_time - self._last_nodes_fetch) >= 9
-        fetch_energy = (current_time - self._last_energy_fetch) >= 60
+        # Alternate between nodes and energy each tick to avoid simultaneous
+        # requests overwhelming the DucoBox embedded HTTP server.
+        # Nodes first on startup so room entities are created before energy entities.
+        fetch_energy = self._fetch_energy_next
+        fetch_nodes = not fetch_energy
 
         try:
             data = await self.api.async_get_data(
@@ -78,19 +73,34 @@ class DucoBoxCoordinator(DataUpdateCoordinator[DucoBoxData]):
                 fetch_nodes=fetch_nodes,
             )
 
-            # Update cache and timestamps for what we fetched
+            # Only flip after success — failed ticks retry the same type next tick
+            self._fetch_energy_next = not self._fetch_energy_next
+
             if fetch_energy:
-                self._cached_energy = data.energy_info
-                self._last_energy_fetch = current_time
+                if data.energy_info is not None:
+                    # Only update cache when we got real data — keep old cache on failure
+                    self._cached_energy = data.energy_info
+                elif self._cached_energy is not None:
+                    # Restore cached value when energy fetch returned nothing
+                    data.energy_info = self._cached_energy
             elif self._cached_energy is not None:
-                # Use cached energy if we didn't fetch new data
                 data.energy_info = self._cached_energy
 
             if fetch_nodes:
+                # Merge live results with cache: keep stale data for nodes that
+                # didn't respond this tick so sensors show last known value
+                # instead of unknown.
+                if self._cached_nodes:
+                    live = {n.node_id: n for n in data.nodes}
+                    merged = []
+                    for cached in self._cached_nodes:
+                        merged.append(live.get(cached.node_id, cached))
+                    # Also add any newly discovered nodes not in the old cache
+                    cached_ids = {n.node_id for n in self._cached_nodes}
+                    merged.extend(n for n in data.nodes if n.node_id not in cached_ids)
+                    data.nodes = merged
                 self._cached_nodes = data.nodes
-                self._last_nodes_fetch = current_time
             elif self._cached_nodes:
-                # Use cached nodes if we didn't fetch new data
                 data.nodes = self._cached_nodes
 
         except (TimeoutError, ServerTimeoutError) as err:
