@@ -44,7 +44,9 @@ class DucoBoxCoordinator(DataUpdateCoordinator[DucoBoxData]):
         )
         self.api = api
         self.config_entry = config_entry
-        self._fetch_energy_next = False  # alternate: nodes first on startup, then energy, then nodes...
+        self._fetch_energy_next = (
+            False  # alternate: nodes first on startup, then energy, then nodes...
+        )
         self._cached_energy = None
         self._cached_nodes = []
 

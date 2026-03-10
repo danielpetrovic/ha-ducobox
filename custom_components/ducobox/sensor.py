@@ -145,9 +145,9 @@ SENSORS: tuple[DucoBoxSensorEntityDescription, ...] = (
         native_unit_of_measurement=PERCENTAGE,
         state_class=SensorStateClass.MEASUREMENT,
         icon="mdi:valve",
-        value_fn=lambda data: data.energy_info.bypass_status
-        if data.energy_info
-        else None,
+        value_fn=lambda data: (
+            data.energy_info.bypass_status if data.energy_info else None
+        ),
     ),
     DucoBoxSensorEntityDescription(
         key="filter_remaining_time",
@@ -156,9 +156,9 @@ SENSORS: tuple[DucoBoxSensorEntityDescription, ...] = (
         device_class=SensorDeviceClass.DURATION,
         state_class=SensorStateClass.MEASUREMENT,
         icon="mdi:air-filter",
-        value_fn=lambda data: data.energy_info.filter_remaining_time
-        if data.energy_info
-        else None,
+        value_fn=lambda data: (
+            data.energy_info.filter_remaining_time if data.energy_info else None
+        ),
     ),
     DucoBoxSensorEntityDescription(
         key="supply_fan_speed",
@@ -166,9 +166,9 @@ SENSORS: tuple[DucoBoxSensorEntityDescription, ...] = (
         native_unit_of_measurement=REVOLUTIONS_PER_MINUTE,
         state_class=SensorStateClass.MEASUREMENT,
         icon="mdi:fan",
-        value_fn=lambda data: data.energy_info.supply_fan_speed
-        if data.energy_info
-        else None,
+        value_fn=lambda data: (
+            data.energy_info.supply_fan_speed if data.energy_info else None
+        ),
     ),
     DucoBoxSensorEntityDescription(
         key="supply_fan_pwm",
@@ -176,9 +176,9 @@ SENSORS: tuple[DucoBoxSensorEntityDescription, ...] = (
         native_unit_of_measurement=PERCENTAGE,
         state_class=SensorStateClass.MEASUREMENT,
         icon="mdi:gauge",
-        value_fn=lambda data: data.energy_info.supply_fan_pwm_percentage
-        if data.energy_info
-        else None,
+        value_fn=lambda data: (
+            data.energy_info.supply_fan_pwm_percentage if data.energy_info else None
+        ),
     ),
     DucoBoxSensorEntityDescription(
         key="exhaust_fan_speed",
@@ -186,9 +186,9 @@ SENSORS: tuple[DucoBoxSensorEntityDescription, ...] = (
         native_unit_of_measurement=REVOLUTIONS_PER_MINUTE,
         state_class=SensorStateClass.MEASUREMENT,
         icon="mdi:fan",
-        value_fn=lambda data: data.energy_info.exhaust_fan_speed
-        if data.energy_info
-        else None,
+        value_fn=lambda data: (
+            data.energy_info.exhaust_fan_speed if data.energy_info else None
+        ),
     ),
     DucoBoxSensorEntityDescription(
         key="exhaust_fan_pwm",
@@ -196,9 +196,9 @@ SENSORS: tuple[DucoBoxSensorEntityDescription, ...] = (
         native_unit_of_measurement=PERCENTAGE,
         state_class=SensorStateClass.MEASUREMENT,
         icon="mdi:gauge",
-        value_fn=lambda data: data.energy_info.exhaust_fan_pwm_percentage
-        if data.energy_info
-        else None,
+        value_fn=lambda data: (
+            data.energy_info.exhaust_fan_pwm_percentage if data.energy_info else None
+        ),
     ),
 )
 
@@ -223,10 +223,16 @@ async def async_setup_entry(
             # registered as coordinator listeners so they update on the energy tick.
             is_core_sensor = description.key in {"state", "mode", "flow_lvl_tgt", "rh"}
             is_energy_sensor = description.key in {
-                "temp_oda", "temp_sup", "temp_eta", "temp_eha",
-                "bypass_status", "filter_remaining_time",
-                "supply_fan_speed", "supply_fan_pwm",
-                "exhaust_fan_speed", "exhaust_fan_pwm",
+                "temp_oda",
+                "temp_sup",
+                "temp_eta",
+                "temp_eha",
+                "bypass_status",
+                "filter_remaining_time",
+                "supply_fan_speed",
+                "supply_fan_pwm",
+                "exhaust_fan_speed",
+                "exhaust_fan_pwm",
             }
             if value is not None or is_core_sensor or is_energy_sensor:
                 entities.append(DucoBoxSensor(coordinator, description))

@@ -342,7 +342,9 @@ class DucoCommunicationPrintApi(DucoApiBase):
                         devtype=data.get("devtype", "Unknown"),
                         temp=data.get("temp"),
                         co2=data.get("co2"),
-                        rh=data.get("rh") if data.get("rh") and data.get("rh") > 0 else None,
+                        rh=data.get("rh")
+                        if data.get("rh") and data.get("rh") > 0
+                        else None,
                         state=data.get("state"),
                         mode=data.get("mode"),
                         swversion=data.get("swversion"),
@@ -383,7 +385,9 @@ class DucoCommunicationPrintApi(DucoApiBase):
                 )
                 return [n for n in results if n is not None]
             # Periodic re-discovery: reset counter and fall through to full scan
-            _LOGGER.debug("Running periodic node re-discovery (tick %d)", self._discovery_tick)
+            _LOGGER.debug(
+                "Running periodic node re-discovery (tick %d)", self._discovery_tick
+            )
             self._discovery_tick = 0
 
         # Discovery scan: check all candidate ranges with limited concurrency
@@ -391,7 +395,9 @@ class DucoCommunicationPrintApi(DucoApiBase):
         # - 50-100: Where box sensors (UCRH, etc.) are typically located
         # Semaphore limits concurrent requests to avoid overwhelming the DucoBox HTTP server
         candidate_ids = list(range(2, 11)) + list(range(50, 101))
-        _LOGGER.debug("Scanning %d candidate node IDs for discovery", len(candidate_ids))
+        _LOGGER.debug(
+            "Scanning %d candidate node IDs for discovery", len(candidate_ids)
+        )
 
         semaphore = asyncio.Semaphore(5)
 
@@ -408,7 +414,9 @@ class DucoCommunicationPrintApi(DucoApiBase):
         if self._discovered_node_ids is not None:
             merged = list(new_ids | set(self._discovered_node_ids))
             if merged != self._discovered_node_ids:
-                _LOGGER.debug("Node list updated: %s → %s", self._discovered_node_ids, merged)
+                _LOGGER.debug(
+                    "Node list updated: %s → %s", self._discovered_node_ids, merged
+                )
             self._discovered_node_ids = merged
         else:
             self._discovered_node_ids = list(new_ids)
