@@ -237,34 +237,58 @@ async def async_setup_entry(
             if value is not None or is_core_sensor or is_energy_sensor:
                 entities.append(DucoBoxSensor(coordinator, description))
 
-    # Add room node sensors
+    # Track which node IDs we've already created entities for, so the coordinator
+    # listener below can add entities for nodes discovered later (e.g. weak RF
+    # nodes that missed the initial boot scan).
+    known_node_ids: set[int] = set()
+
+    def _entities_for_node(node: DucoBoxNodeData) -> list[SensorEntity]:
+        has_sensors = (
+            (node.temp is not None and node.temp != 0)
+            or (node.co2 is not None and node.co2 > 0)
+            or (node.rh is not None and node.rh > 0)
+        )
+        if not has_sensors:
+            return []
+        node_entities: list[SensorEntity] = []
+        if node.temp is not None and node.temp != 0:
+            node_entities.append(DucoBoxNodeSensor(coordinator, node, "temp"))
+        if node.co2 is not None and node.co2 > 0:
+            node_entities.append(DucoBoxNodeSensor(coordinator, node, "co2"))
+        if node.rh is not None and node.rh > 0:
+            node_entities.append(DucoBoxNodeSensor(coordinator, node, "rh"))
+        if node.rssi_n2m is not None:
+            node_entities.append(DucoBoxNodeSensor(coordinator, node, "rssi"))
+        node_entities.append(DucoBoxNodeSensor(coordinator, node, "cerr"))
+        return node_entities
+
+    # Add room node sensors found at initial setup
     if coordinator.data and coordinator.data.nodes:
         for node in coordinator.data.nodes:
-            # Check if this node has any actual sensors (not just diagnostic)
-            has_sensors = (
-                (node.temp is not None and node.temp != 0)
-                or (node.co2 is not None and node.co2 > 0)
-                or (node.rh is not None and node.rh > 0)
-            )
-
-            # Skip nodes with no actual sensors (like UC devices)
-            if not has_sensors:
-                continue
-
-            # Only add sensors that actually exist (not 0 or None)
-            if node.temp is not None and node.temp != 0:
-                entities.append(DucoBoxNodeSensor(coordinator, node, "temp"))
-            if node.co2 is not None and node.co2 > 0:
-                entities.append(DucoBoxNodeSensor(coordinator, node, "co2"))
-            if node.rh is not None and node.rh > 0:
-                entities.append(DucoBoxNodeSensor(coordinator, node, "rh"))
-            # Add diagnostic sensors for RF devices
-            if node.rssi_n2m is not None:
-                entities.append(DucoBoxNodeSensor(coordinator, node, "rssi"))
-            # Communication errors sensor - available for all nodes
-            entities.append(DucoBoxNodeSensor(coordinator, node, "cerr"))
+            node_entities = _entities_for_node(node)
+            if node_entities:
+                entities.extend(node_entities)
+                known_node_ids.add(node.node_id)
 
     async_add_entities(entities)
+
+    # Register a coordinator listener to dynamically add entities for nodes that
+    # were not present during initial setup (e.g. weak RF nodes that missed the
+    # initial discovery scan but appear during periodic re-discovery).
+    def _async_add_new_nodes() -> None:
+        if not coordinator.data or not coordinator.data.nodes:
+            return
+        new_entities: list[SensorEntity] = []
+        for node in coordinator.data.nodes:
+            if node.node_id not in known_node_ids:
+                node_entities = _entities_for_node(node)
+                if node_entities:
+                    new_entities.extend(node_entities)
+                    known_node_ids.add(node.node_id)
+        if new_entities:
+            async_add_entities(new_entities)
+
+    entry.async_on_unload(coordinator.async_add_listener(_async_add_new_nodes))
 
 
 class DucoBoxSensor(DucoBoxEntity, RestoreSensor):
@@ -308,7 +332,7 @@ class DucoBoxSensor(DucoBoxEntity, RestoreSensor):
         return self.entity_description.options
 
 
-class DucoBoxNodeSensor(CoordinatorEntity[DucoBoxCoordinator], SensorEntity):
+class DucoBoxNodeSensor(CoordinatorEntity[DucoBoxCoordinator], RestoreSensor):
     """Defines a DucoBox node (room) sensor."""
 
     _attr_has_entity_name = True
@@ -378,6 +402,21 @@ class DucoBoxNodeSensor(CoordinatorEntity[DucoBoxCoordinator], SensorEntity):
             self._attr_state_class = SensorStateClass.TOTAL_INCREASING
             self._attr_icon = "mdi:counter"
             self._attr_entity_registry_enabled_default = False
+
+    async def async_added_to_hass(self) -> None:
+        """Restore last known value on startup."""
+        # Restore BEFORE super() so _last_value is populated before CoordinatorEntity
+        # registers its listener and fires write_ha_state() immediately.
+        if (last_data := await self.async_get_last_sensor_data()) is not None:
+            self._last_value = last_data.native_value
+        await super().async_added_to_hass()
+
+    @property
+    def available(self) -> bool:
+        """Return True whenever we have a value, even if the coordinator is failing."""
+        if self._last_value is not None:
+            return True
+        return self.coordinator.last_update_success
 
     @property
     def native_value(self) -> StateType:
