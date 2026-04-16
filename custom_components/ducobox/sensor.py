@@ -317,6 +317,11 @@ class DucoBoxSensor(DucoBoxEntity, RestoreSensor):
         await super().async_added_to_hass()
 
     @property
+    def available(self) -> bool:
+        """Always available — show last known value or unknown instead of unavailable."""
+        return True
+
+    @property
     def native_value(self) -> StateType | datetime:
         """Return the state of the sensor, falling back to last known value."""
         value = self.entity_description.value_fn(self.coordinator.data)
@@ -413,10 +418,8 @@ class DucoBoxNodeSensor(CoordinatorEntity[DucoBoxCoordinator], RestoreSensor):
 
     @property
     def available(self) -> bool:
-        """Return True whenever we have a value, even if the coordinator is failing."""
-        if self._last_value is not None:
-            return True
-        return self.coordinator.last_update_success
+        """Always available — show last known value or unknown instead of unavailable."""
+        return True
 
     @property
     def native_value(self) -> StateType:

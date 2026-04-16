@@ -106,13 +106,14 @@ class DucoBoxCoordinator(DataUpdateCoordinator[DucoBoxData]):
                 data.nodes = self._cached_nodes
 
         except (TimeoutError, ServerTimeoutError) as err:
-            # Timeout errors are common due to network issues - log at debug level
-            # and only raise UpdateFailed without logging error
+            # Transient timeouts are normal — log at debug and return last known data
+            # so the base class never raises an ERROR log for a single missed tick.
             _LOGGER.debug("Timeout fetching data from DucoBox: %s", err)
+            if self.data is not None:
+                return self.data
             msg = f"Timeout connecting to DucoBox: {err}"
             raise UpdateFailed(msg) from err
         except ClientError as err:
-            # Other client errors might indicate real problems - log at warning level
             _LOGGER.warning("Error fetching data from DucoBox: %s", err)
             msg = f"Failed to update coordinator data: {err}"
             raise UpdateFailed(msg) from err
