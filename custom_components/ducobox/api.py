@@ -330,7 +330,9 @@ class DucoCommunicationPrintApi(DucoApiBase):
         try:
             url = f"{self._base_url}/nodeinfoget"
             params = {"node": node_id}
-            response = await self.session.get(url, params=params, timeout=REQUEST_TIMEOUT)
+            response = await self.session.get(
+                url, params=params, timeout=REQUEST_TIMEOUT
+            )
 
             if response.status == 200:
                 data = await response.json()
