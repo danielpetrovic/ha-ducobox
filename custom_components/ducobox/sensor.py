@@ -325,8 +325,17 @@ class DucoBoxSensor(DucoBoxEntity, RestoreSensor):
     def native_value(self) -> StateType | datetime:
         """Return the state of the sensor, falling back to last known value."""
         value = self.entity_description.value_fn(self.coordinator.data)
+        opts = self.options
+        if value is not None:
+            # Reject placeholder values the DucoBox returns when not yet ready
+            if opts and value not in opts:
+                value = None
         if value is not None:
             self._last_value = value
+        # Also validate cached/restored value — stale invalid values can be
+        # persisted by RestoreSensor from a previous session before this fix.
+        if opts and self._last_value is not None and self._last_value not in opts:
+            self._last_value = None
         return self._last_value
 
     @property

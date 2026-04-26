@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import dataclasses
 import logging
 from datetime import timedelta
 
@@ -9,11 +10,14 @@ from aiohttp import ClientError, ServerTimeoutError
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import HomeAssistantError
+from homeassistant.helpers.storage import Store
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
 from .api import DucoApiBase
 from .const import DOMAIN
-from .models import DucoBoxData, DucoBoxDeviceInfo
+from .models import DucoBoxData, DucoBoxDeviceInfo, DucoBoxNodeData
+
+_NODE_CACHE_VERSION = 1
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -48,7 +52,12 @@ class DucoBoxCoordinator(DataUpdateCoordinator[DucoBoxData]):
             False  # alternate: nodes first on startup, then energy, then nodes...
         )
         self._cached_energy = None
-        self._cached_nodes = []
+        self._cached_nodes: list[DucoBoxNodeData] = []
+        self._node_store = Store(
+            hass,
+            _NODE_CACHE_VERSION,
+            f"{DOMAIN}.nodes.{config_entry.entry_id}",
+        )
 
     async def async_setup(self) -> None:
         """Set up the coordinator."""
@@ -60,6 +69,18 @@ class DucoBoxCoordinator(DataUpdateCoordinator[DucoBoxData]):
         except ClientError as err:
             msg = f"Failed to setup coordinator: {err}"
             raise UpdateFailed(msg) from err
+
+        # Pre-populate node cache from persistent storage so all previously-known
+        # node entities are created at startup even if they miss the first live scan.
+        stored = await self._node_store.async_load()
+        if stored:
+            try:
+                self._cached_nodes = [DucoBoxNodeData(**node) for node in stored]
+                _LOGGER.debug(
+                    "Restored %d nodes from persistent cache", len(self._cached_nodes)
+                )
+            except Exception:  # noqa: BLE001
+                self._cached_nodes = []
 
     async def _async_update_data(self) -> DucoBoxData:
         """Update the data."""
@@ -102,6 +123,11 @@ class DucoBoxCoordinator(DataUpdateCoordinator[DucoBoxData]):
                     merged.extend(n for n in data.nodes if n.node_id not in cached_ids)
                     data.nodes = merged
                 self._cached_nodes = data.nodes
+                # Persist node metadata so entities can be created at next startup
+                # even if some nodes miss the initial live scan (e.g. slow responders).
+                await self._node_store.async_save(
+                    [dataclasses.asdict(n) for n in self._cached_nodes]
+                )
             elif self._cached_nodes:
                 data.nodes = self._cached_nodes
 

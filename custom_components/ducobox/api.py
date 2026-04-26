@@ -330,7 +330,7 @@ class DucoCommunicationPrintApi(DucoApiBase):
         try:
             url = f"{self._base_url}/nodeinfoget"
             params = {"node": node_id}
-            response = await self.session.get(url, params=params, timeout=2)
+            response = await self.session.get(url, params=params, timeout=REQUEST_TIMEOUT)
 
             if response.status == 200:
                 data = await response.json()
@@ -390,11 +390,10 @@ class DucoCommunicationPrintApi(DucoApiBase):
             )
             self._discovery_tick = 0
 
-        # Discovery scan: check all candidate ranges with limited concurrency
-        # - 2-10: Common room sensors
-        # - 50-100: Where box sensors (UCRH, etc.) are typically located
-        # Semaphore limits concurrent requests to avoid overwhelming the DucoBox HTTP server
-        candidate_ids = list(range(2, 11)) + list(range(50, 101))
+        # Discovery scan: check all node IDs 2-100 with limited concurrency.
+        # Node 1 is always the main box, handled separately.
+        # Semaphore limits concurrent requests to avoid overwhelming the DucoBox HTTP server.
+        candidate_ids = list(range(2, 101))
         _LOGGER.debug(
             "Scanning %d candidate node IDs for discovery", len(candidate_ids)
         )
