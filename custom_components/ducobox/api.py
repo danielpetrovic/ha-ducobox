@@ -116,6 +116,10 @@ class DucoApiBase(ABC):
     async def async_set_node_override(self, node_id: int, percentage: int) -> bool:
         """Set flow override for a specific node (0-100% or 255 to clear)."""
 
+    @abstractmethod
+    async def async_set_node_ventilation_state(self, node_id: int, state: str) -> bool:
+        """Set the ventilation state for a specific node."""
+
 
 class DucoCommunicationPrintApi(DucoApiBase):
     """API client for Duco Communication Print (0000-4251)."""
@@ -338,6 +342,7 @@ class DucoCommunicationPrintApi(DucoApiBase):
                 data = await response.json()
 
                 if data.get("location") and data.get("devtype"):
+                    raw_state = data.get("state")
                     return DucoBoxNodeData(
                         node_id=node_id,
                         location=data.get("location", f"Node {node_id}"),
@@ -347,7 +352,9 @@ class DucoCommunicationPrintApi(DucoApiBase):
                         rh=data.get("rh")
                         if data.get("rh") and data.get("rh") > 0
                         else None,
-                        state=data.get("state"),
+                        state=self.STATE_MAP.get(raw_state, raw_state)
+                        if raw_state
+                        else None,
                         mode=data.get("mode"),
                         swversion=data.get("swversion"),
                         serialnb=data.get("serialnb"),
@@ -356,6 +363,8 @@ class DucoCommunicationPrintApi(DucoApiBase):
                         netw=data.get("netw"),
                         cntdwn=data.get("cntdwn"),
                         endtime=data.get("endtime"),
+                        trgt=data.get("trgt"),
+                        actl=data.get("actl"),
                         rssi_n2m=data.get("rssi_n2m"),
                         rssi_n2h=data.get("rssi_n2h"),
                         hop_via=data.get("hop_via"),
@@ -518,9 +527,9 @@ class DucoCommunicationPrintApi(DucoApiBase):
                     temp_dependent=create_param(data, "TempDependent"),
                     rh_delta=create_param(data, "RHDelta"),
                     sensor_visu_level=create_param(data, "SensorVisuLevel"),
-                    auto_min=None,
-                    auto_max=None,
-                    capacity=None,
+                    auto_min=create_param(data, "AutoMin"),
+                    auto_max=create_param(data, "AutoMax"),
+                    capacity=create_param(data, "Capacity"),
                     bypass_mode=None,
                     bypass_adaptive=None,
                     comfort_temperature=None,
@@ -624,5 +633,35 @@ class DucoCommunicationPrintApi(DucoApiBase):
 
         except Exception as err:  # noqa: BLE001
             _LOGGER.error("Failed to set node %s override: %s", node_id, err)
+
+        return False
+
+    async def async_set_node_ventilation_state(self, node_id: int, state: str) -> bool:
+        """
+        Set the ventilation state for a specific node.
+
+        Args:
+            node_id: The node ID to set state for.
+            state: The desired ventilation state (friendly name).
+
+        Returns:
+            bool: True if successful, False otherwise.
+
+        """
+        api_state = self.STATE_REVERSE_MAP.get(state, state)
+
+        try:
+            url = f"{self._base_url}/nodesetoperstate"
+            params = {"node": node_id, "value": api_state}
+            response = await self.session.get(
+                url, params=params, timeout=REQUEST_TIMEOUT
+            )
+
+            if response.status == 200:
+                _LOGGER.debug("Set node %s ventilation state to %s", node_id, state)
+                return True
+
+        except Exception as err:  # noqa: BLE001
+            _LOGGER.error("Failed to set node %s ventilation state: %s", node_id, err)
 
         return False

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from aiohttp import ClientError
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_HOST, Platform
 from homeassistant.core import HomeAssistant
@@ -29,7 +30,10 @@ async def async_setup_entry(hass: HomeAssistant, entry: DucoBoxConfigEntry) -> b
     session = async_get_clientsession(hass)
 
     # Detect which API type the device supports
-    api_class = await detect_api_type(entry.data[CONF_HOST], session)
+    try:
+        api_class = await detect_api_type(entry.data[CONF_HOST], session)
+    except ClientError as err:
+        raise ConfigEntryNotReady(err) from err
     api = api_class(entry.data[CONF_HOST], session)
 
     coordinator = DucoBoxCoordinator(hass, entry, api)

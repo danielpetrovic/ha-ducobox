@@ -34,6 +34,8 @@ class DucoBoxNodeData:
     netw: str | None = None  # Network type (WI = wired, RF = radio frequency)
     cntdwn: int | None = None  # Countdown timer
     endtime: int | None = None  # End time timestamp
+    trgt: int | None = None  # Target airflow %
+    actl: int | None = None  # Actual airflow %
     rssi_n2m: int | None = None  # RSSI node to main (signal strength)
     rssi_n2h: int | None = None  # RSSI node to hop (signal strength)
     hop_via: int | None = None  # Node ID that this node hops through

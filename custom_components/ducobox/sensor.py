@@ -203,7 +203,23 @@ SENSORS: tuple[DucoBoxSensorEntityDescription, ...] = (
 )
 
 
-async def async_setup_entry(
+_ENERGY_SENSOR_KEYS = {
+    "temp_oda",
+    "temp_sup",
+    "temp_eta",
+    "temp_eha",
+    "bypass_status",
+    "filter_remaining_time",
+    "supply_fan_speed",
+    "supply_fan_pwm",
+    "exhaust_fan_speed",
+    "exhaust_fan_pwm",
+}
+
+_CORE_SENSOR_KEYS = {"state", "mode", "flow_lvl_tgt", "rh"}
+
+
+async def async_setup_entry(  # noqa: PLR0915
     hass: HomeAssistant,  # noqa: ARG001
     entry: DucoBoxConfigEntry,
     async_add_entities: AddConfigEntryEntitiesCallback,
@@ -213,29 +229,36 @@ async def async_setup_entry(
 
     entities: list[SensorEntity] = []
 
-    # Add main box sensors (only if they would have data)
+    # Collect energy sensor descriptions for lazy creation; add all others now.
+    energy_descriptions: dict[str, DucoBoxSensorEntityDescription] = {}
+
     for description in SENSORS:
-        # Check if this sensor would have a value
+        if description.key in _ENERGY_SENSOR_KEYS:
+            energy_descriptions[description.key] = description
+            continue
         if coordinator.data:
             value = description.value_fn(coordinator.data)
-            # Always add core sensors and energy sensors even if temporarily None.
-            # Energy sensors start None on first tick (nodes-only), but must be
-            # registered as coordinator listeners so they update on the energy tick.
-            is_core_sensor = description.key in {"state", "mode", "flow_lvl_tgt", "rh"}
-            is_energy_sensor = description.key in {
-                "temp_oda",
-                "temp_sup",
-                "temp_eta",
-                "temp_eha",
-                "bypass_status",
-                "filter_remaining_time",
-                "supply_fan_speed",
-                "supply_fan_pwm",
-                "exhaust_fan_speed",
-                "exhaust_fan_pwm",
-            }
-            if value is not None or is_core_sensor or is_energy_sensor:
+            if value is not None or description.key in _CORE_SENSOR_KEYS:
                 entities.append(DucoBoxSensor(coordinator, description))
+
+    # Track created energy sensor keys to avoid duplicates across coordinator ticks.
+    created_energy_keys: set[str] = set()
+
+    def _async_add_energy_sensors() -> None:
+        """Create energy sensor entities the first time their value is non-None."""
+        if not coordinator.data:
+            return
+        new_entities: list[SensorEntity] = []
+        for key, description in energy_descriptions.items():
+            if key in created_energy_keys:
+                continue
+            if description.value_fn(coordinator.data) is not None:
+                new_entities.append(DucoBoxSensor(coordinator, description))
+                created_energy_keys.add(key)
+        if new_entities:
+            async_add_entities(new_entities)
+
+    entry.async_on_unload(coordinator.async_add_listener(_async_add_energy_sensors))
 
     # Track which node IDs we've already created entities for, so the coordinator
     # listener below can add entities for nodes discovered later (e.g. weak RF
@@ -247,6 +270,8 @@ async def async_setup_entry(
             (node.temp is not None and node.temp != 0)
             or (node.co2 is not None and node.co2 > 0)
             or (node.rh is not None and node.rh > 0)
+            or node.trgt is not None
+            or node.actl is not None
         )
         if not has_sensors:
             return []
@@ -257,6 +282,10 @@ async def async_setup_entry(
             node_entities.append(DucoBoxNodeSensor(coordinator, node, "co2"))
         if node.rh is not None and node.rh > 0:
             node_entities.append(DucoBoxNodeSensor(coordinator, node, "rh"))
+        if node.trgt is not None:
+            node_entities.append(DucoBoxNodeSensor(coordinator, node, "trgt"))
+        if node.actl is not None:
+            node_entities.append(DucoBoxNodeSensor(coordinator, node, "actl"))
         if node.rssi_n2m is not None:
             node_entities.append(DucoBoxNodeSensor(coordinator, node, "rssi"))
         node_entities.append(DucoBoxNodeSensor(coordinator, node, "cerr"))
@@ -403,6 +432,16 @@ class DucoBoxNodeSensor(CoordinatorEntity[DucoBoxCoordinator], RestoreSensor):
             self._attr_native_unit_of_measurement = PERCENTAGE
             self._attr_state_class = SensorStateClass.MEASUREMENT
             self._attr_suggested_display_precision = 1
+        elif sensor_type == "trgt":
+            self._attr_translation_key = "node_trgt"
+            self._attr_native_unit_of_measurement = PERCENTAGE
+            self._attr_state_class = SensorStateClass.MEASUREMENT
+            self._attr_icon = "mdi:gauge"
+        elif sensor_type == "actl":
+            self._attr_translation_key = "node_actl"
+            self._attr_native_unit_of_measurement = PERCENTAGE
+            self._attr_state_class = SensorStateClass.MEASUREMENT
+            self._attr_icon = "mdi:gauge"
         elif sensor_type == "rssi":
             self._attr_translation_key = "node_rssi"
             self._attr_entity_category = EntityCategory.DIAGNOSTIC
@@ -458,6 +497,10 @@ class DucoBoxNodeSensor(CoordinatorEntity[DucoBoxCoordinator], RestoreSensor):
                     return node.co2
                 if self._sensor_type == "rh":
                     return node.rh
+                if self._sensor_type == "trgt":
+                    return node.trgt
+                if self._sensor_type == "actl":
+                    return node.actl
                 if self._sensor_type == "rssi":
                     return node.rssi_n2m
                 if self._sensor_type == "cerr":

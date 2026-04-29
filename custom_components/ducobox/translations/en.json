@@ -34,6 +34,15 @@
             "node_rh_setpoint": {
                 "name": "Humidity Setpoint"
             },
+            "node_auto_min": {
+                "name": "Auto Minimum Flow"
+            },
+            "node_auto_max": {
+                "name": "Auto Maximum Flow"
+            },
+            "node_capacity": {
+                "name": "Capacity"
+            },
             "node_manual1": {
                 "name": "Manual Speed Level 1"
             },
@@ -107,6 +116,9 @@
         },
         "fan": {
             "ventilation": {
+                "name": "Ventilation"
+            },
+            "node_ventilation": {
                 "name": "Ventilation"
             }
         },
@@ -188,6 +200,12 @@
             },
             "node_rh": {
                 "name": "Relative Humidity"
+            },
+            "node_trgt": {
+                "name": "Target Airflow"
+            },
+            "node_actl": {
+                "name": "Actual Airflow"
             },
             "node_rssi": {
                 "name": "Signal Strength"

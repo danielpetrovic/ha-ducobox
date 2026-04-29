@@ -18,7 +18,7 @@ from .models import DucoBoxNodeConfigParam, DucoBoxNodeData
 CONF_TEMP_OFFSET = "temp_offset"
 
 
-async def async_setup_entry(
+async def async_setup_entry(  # noqa: PLR0915
     hass: HomeAssistant,  # noqa: ARG001
     entry: DucoBoxConfigEntry,
     async_add_entities: AddConfigEntryEntitiesCallback,
@@ -209,7 +209,11 @@ async def async_setup_entry(
     if coordinator.data and coordinator.data.nodes:
         for node in coordinator.data.nodes:
             # Add configuration entities for UCCO2 and UCRH nodes
-            if node.devtype and ("UCCO2" in node.devtype or "UCRH" in node.devtype):
+            if node.devtype and (
+                "UCCO2" in node.devtype
+                or "UCRH" in node.devtype
+                or node.devtype in ("VLVCO2", "VLVCO2RH")
+            ):
                 # Fetch node configuration from the API
                 node_config = await coordinator.api.async_get_node_config(node.node_id)
 
@@ -298,6 +302,52 @@ async def async_setup_entry(
                                 node_config.sensor_visu_level,
                                 PERCENTAGE,
                                 "mdi:gauge",
+                                mode=NumberMode.BOX,
+                            )
+                        )
+
+                    # Add AutoMin, AutoMax, Capacity for VLV nodes
+                    if node_config.auto_min:
+                        entities.append(
+                            DucoBoxNodeConfigNumber(
+                                coordinator,
+                                node,
+                                entry,
+                                "AutoMin",
+                                "auto_min",
+                                node_config.auto_min,
+                                PERCENTAGE,
+                                "mdi:fan-auto",
+                                mode=NumberMode.BOX,
+                            )
+                        )
+
+                    if node_config.auto_max:
+                        entities.append(
+                            DucoBoxNodeConfigNumber(
+                                coordinator,
+                                node,
+                                entry,
+                                "AutoMax",
+                                "auto_max",
+                                node_config.auto_max,
+                                PERCENTAGE,
+                                "mdi:fan-auto",
+                                mode=NumberMode.BOX,
+                            )
+                        )
+
+                    if node_config.capacity:
+                        entities.append(
+                            DucoBoxNodeConfigNumber(
+                                coordinator,
+                                node,
+                                entry,
+                                "Capacity",
+                                "capacity",
+                                node_config.capacity,
+                                "m³/h",
+                                "mdi:air-filter",
                                 mode=NumberMode.BOX,
                             )
                         )

@@ -47,7 +47,11 @@ async def async_setup_entry(
         for node in coordinator.data.nodes:
             node_config = None
 
-            if node.devtype and ("UCCO2" in node.devtype or "UCRH" in node.devtype):
+            if node.devtype and (
+                "UCCO2" in node.devtype
+                or "UCRH" in node.devtype
+                or node.devtype in ("VLVCO2", "VLVCO2RH")
+            ):
                 # Fetch node configuration from the API
                 node_config = await coordinator.api.async_get_node_config(node.node_id)
 

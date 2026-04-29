@@ -171,3 +171,29 @@ class DucoBoxCoordinator(DataUpdateCoordinator[DucoBoxData]):
         except ClientError as err:
             msg = f"Failed to set flow override to {percentage}%: {err}"
             raise HomeAssistantError(msg) from err
+
+    async def async_set_node_flow_override(self, node_id: int, percentage: int) -> None:
+        """Set the flow override percentage for a specific node (0-100% or 255 to clear)."""
+        try:
+            success = await self.api.async_set_node_override(node_id, percentage)
+            if not success:
+                msg = f"Failed to set node {node_id} flow override to {percentage}%"
+                raise HomeAssistantError(msg)
+
+            await self.async_request_refresh()
+        except ClientError as err:
+            msg = f"Failed to set node {node_id} flow override to {percentage}%: {err}"
+            raise HomeAssistantError(msg) from err
+
+    async def async_set_node_ventilation_state(self, node_id: int, state: str) -> None:
+        """Set the ventilation state for a specific node."""
+        try:
+            success = await self.api.async_set_node_ventilation_state(node_id, state)
+            if not success:
+                msg = f"Failed to set node {node_id} ventilation state to {state}"
+                raise HomeAssistantError(msg)
+
+            await self.async_request_refresh()
+        except ClientError as err:
+            msg = f"Failed to set node {node_id} ventilation state to {state}: {err}"
+            raise HomeAssistantError(msg) from err
