@@ -22,6 +22,12 @@ This integration enables controlling and monitoring DucoBox ventilation systems 
   - **Turn On/Off**: Sets to Auto mode when turned on
   - Percentage slider clears any active preset; selecting a preset clears the override
 
+- **Room Valve** *(VLVCO2 and VLVCO2RH nodes only)*: Per-valve fan entity for independently controllable valves
+  - **Percentage Slider**: Direct valve flow override (0-100%); 0% fully closes the valve
+  - **Preset Modes**: Same modes as the main ventilation fan (Auto, Manual 1/2/3, etc.)
+  - **Turn On/Off**: Turn on sets the valve to Auto; turn off sets override to 0% (fully closed)
+  - Each valve is controlled independently — changes do not affect the main box or other nodes
+
 ### Select entities
 
 - **Bypass Mode**: Select bypass operation mode (Automatic, Closed, Open)
@@ -31,9 +37,9 @@ This integration enables controlling and monitoring DucoBox ventilation systems 
 **Main DucoBox:**
 - **Bypass Adaptive**: Enable/disable adaptive bypass control
 
-**Room Nodes:**
-- **Temperature Dependent**: Enable temperature-weighted ventilation demand (useful for bathrooms)
-- **Humidity Delta**: Enable humidity delta control
+**Room Nodes** *(UCCO2, UCRH, VLVCO2, VLVCO2RH nodes)*:
+- **Temperature Dependent**: Enable temperature-weighted ventilation demand
+- **Humidity Delta**: Enable humidity delta control — UCRH, VLVCO2RH nodes
 
 ### Button entities
 
@@ -53,11 +59,14 @@ This integration enables controlling and monitoring DucoBox ventilation systems 
 - **Airflow Output Maximum**: Calibration for maximum airflow output (m³/h)
 - **Program Mode Zone 1/2**: Zone program mode settings
 
-**Room Node Configuration:**
+**Room Node Configuration** *(UCCO2, UCRH, VLVCO2, VLVCO2RH nodes)*:
 - **Temperature Offset**: Calibrate temperature readings (-3.0°C to +3.0°C, 0.1°C steps)
-- **CO2 Setpoint**: Target CO2 level for demand-based ventilation (ppm)
-- **Humidity Setpoint**: Target humidity level for demand-based ventilation (%)
+- **CO2 Setpoint**: Target CO2 level for demand-based ventilation (ppm) — UCCO2, VLVCO2, VLVCO2RH
+- **Humidity Setpoint**: Target humidity level for demand-based ventilation (%) — UCRH, VLVCO2RH
 - **Manual Speed Level 1/2/3**: Configure flow rates for this node's manual speed presets (%)
+- **Auto Minimum Flow**: Minimum airflow in auto mode for this node (%) — VLV nodes
+- **Auto Maximum Flow**: Maximum airflow in auto mode for this node (%) — VLV nodes
+- **Capacity**: Node ventilation capacity — VLV nodes
 - **Manual Timeout**: Duration for manual mode before returning to auto (minutes)
 - **Sensor Visualization Level**: Adjust sensor display sensitivity (%)
 
@@ -71,7 +80,10 @@ This integration enables controlling and monitoring DucoBox ventilation systems 
 - **Ventilation State End Time**: Timestamp when current ventilation state will end (hidden when in override mode)
 - **Ventilation State Remaining Time**: Remaining time in current ventilation state in seconds (shows 0 when in override mode or expired)
 
-**Energy & Box Information Sensors:**
+**Energy & Box Information Sensors** *(heat recovery / WtW boxes only)*:
+
+These sensors are only created when the DucoBox reports actual data for them. On MV-only (mechanical ventilation without heat recovery) boxes they will not appear.
+
 - **Outdoor Temperature**: Outdoor air temperature (°C)
 - **Supply Temperature**: Supply air temperature (°C)
 - **Extract Temperature**: Extract air temperature (°C)
@@ -88,9 +100,11 @@ This integration enables controlling and monitoring DucoBox ventilation systems 
 Each room is created as a **separate device** with its own sensors:
 - **Temperature**: Temperature sensor for each room (°C)
 - **CO2**: CO2 concentration for each room (ppm)
-- **Relative Humidity**: Relative humidity for each room (%) - when available on RH sensors
-- **Signal Strength**: RSSI signal strength (dBm) - for RF (wireless) sensors only (disabled by default)
-- **Communication Errors**: Total communication errors - diagnostic sensor (disabled by default)
+- **Relative Humidity**: Relative humidity for each room (%) — when available on RH sensors
+- **Target Airflow**: Target flow level for this node (%) — when reported by the node
+- **Actual Airflow**: Actual current flow level for this node (%) — when reported by the node
+- **Signal Strength**: RSSI signal strength (dBm) — RF (wireless) sensors only (disabled by default)
+- **Communication Errors**: Total communication errors — diagnostic sensor (disabled by default)
 
 Room devices are automatically discovered and created based on the **Location** field configured for each node in your DucoBox Communication Print device.
 
@@ -199,9 +213,10 @@ The integration will detect your Communication Print device and set it up automa
 
 The integration creates devices in the following structure:
 - **Main DucoBox Device**: Contains ventilation control (fan/select) and all box sensors
-- **Room Devices** (one per room): Each room sensor node becomes its own device with temperature and CO2 sensors
+- **Room Devices** (one per room): Each room sensor node becomes its own device
   - Device names come from the Location field in Communication Print node configuration
   - Example: A node with Location "Living Room" creates a "Living Room" device with "Temperature" and "CO2" sensors
+  - **VLVCO2/VLVCO2RH valve nodes** additionally get a **fan entity** for independent per-valve control and target/actual airflow sensors
 
 All room devices are linked to the main DucoBox device via the `via_device` relationship.
 
