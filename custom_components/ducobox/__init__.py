@@ -8,6 +8,7 @@ from homeassistant.const import CONF_HOST, Platform
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryNotReady
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
+from homeassistant.helpers.device_registry import DeviceEntry
 from homeassistant.helpers.update_coordinator import UpdateFailed
 
 from .api import detect_api_type
@@ -55,3 +56,12 @@ async def async_setup_entry(hass: HomeAssistant, entry: DucoBoxConfigEntry) -> b
 async def async_unload_entry(hass: HomeAssistant, entry: DucoBoxConfigEntry) -> bool:
     """Unload a config entry."""
     return await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
+
+
+async def async_remove_config_entry_device(
+    hass: HomeAssistant,  # noqa: ARG001
+    config_entry: DucoBoxConfigEntry,  # noqa: ARG001
+    device_entry: DeviceEntry,  # noqa: ARG001
+) -> bool:
+    """Allow removal of devices that are no longer present."""
+    return True

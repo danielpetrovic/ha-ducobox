@@ -212,7 +212,11 @@ async def async_setup_entry(  # noqa: PLR0915
             # UC family: UC (basic controller), UCCO2 (CO2+temp), UCRH (humidity+temp), UCBAT (battery).
             # VLV family: VLV (valve only), VLVCO2 (valve+CO2+temp), VLVCO2RH (valve+CO2+humidity+temp).
             # Only entities for params actually present in the node config are created.
-            if node.devtype and ("UC" in node.devtype or "VLV" in node.devtype):
+            if (
+                node.devtype
+                and node.devtype != "UC"
+                and ("UC" in node.devtype or "VLV" in node.devtype)
+            ):
                 # Fetch node configuration from the API
                 node_config = await coordinator.api.async_get_node_config(node.node_id)
 

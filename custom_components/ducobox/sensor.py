@@ -266,13 +266,14 @@ async def async_setup_entry(  # noqa: PLR0915
     known_node_ids: set[int] = set()
 
     def _entities_for_node(node: DucoBoxNodeData) -> list[SensorEntity]:
+        if node.devtype == "UC":
+            return []
         has_sensors = (
             (node.temp is not None and node.temp != 0)
             or (node.co2 is not None and node.co2 > 0)
             or (node.rh is not None and node.rh > 0)
             or node.trgt is not None
             or node.actl is not None
-            or node.ovrl is not None
             or node.snsr is not None
         )
         if not has_sensors:
@@ -386,7 +387,19 @@ class DucoBoxNodeSensor(CoordinatorEntity[DucoBoxCoordinator], RestoreSensor):
 
     _attr_has_entity_name = True
 
-    def __init__(  # noqa: PLR0915
+    _SENSOR_TYPE_NAMES: dict[str, str] = {
+        "temp": "Temperature",
+        "co2": "CO2",
+        "rh": "Humidity",
+        "trgt": "Target Airflow",
+        "actl": "Actual Airflow",
+        "ovrl": "Override Level",
+        "snsr": "Sensor Demand",
+        "rssi": "Signal Strength",
+        "cerr": "Communication Errors",
+    }
+
+    def __init__(
         self,
         coordinator: DucoBoxCoordinator,
         node: DucoBoxNodeData,
@@ -400,12 +413,11 @@ class DucoBoxNodeSensor(CoordinatorEntity[DucoBoxCoordinator], RestoreSensor):
         self._sensor_type = sensor_type
         self._last_value: StateType | None = None
 
-        # Set unique ID
         self._attr_unique_id = (
             f"{coordinator.config_entry.entry_id}_node_{node.node_id}_{sensor_type}"
         )
+        self._attr_name = self._SENSOR_TYPE_NAMES.get(sensor_type, sensor_type)
 
-        # Create a separate device for this room node
         main_device_serial = coordinator.device_info.serial_number
         node_identifier = f"{main_device_serial}_node_{node.node_id}"
 
@@ -420,53 +432,31 @@ class DucoBoxNodeSensor(CoordinatorEntity[DucoBoxCoordinator], RestoreSensor):
             configuration_url=f"http://{coordinator.config_entry.data[CONF_HOST]}",
         )
 
-        # Set translation key based on sensor type
         if sensor_type == "temp":
-            self._attr_translation_key = "node_temperature"
             self._attr_device_class = SensorDeviceClass.TEMPERATURE
             self._attr_native_unit_of_measurement = UnitOfTemperature.CELSIUS
             self._attr_state_class = SensorStateClass.MEASUREMENT
             self._attr_suggested_display_precision = 1
         elif sensor_type == "co2":
-            self._attr_translation_key = "node_co2"
             self._attr_device_class = SensorDeviceClass.CO2
             self._attr_native_unit_of_measurement = CONCENTRATION_PARTS_PER_MILLION
             self._attr_state_class = SensorStateClass.MEASUREMENT
         elif sensor_type == "rh":
-            self._attr_translation_key = "node_rh"
             self._attr_device_class = SensorDeviceClass.HUMIDITY
             self._attr_native_unit_of_measurement = PERCENTAGE
             self._attr_state_class = SensorStateClass.MEASUREMENT
             self._attr_suggested_display_precision = 1
-        elif sensor_type == "trgt":
-            self._attr_translation_key = "node_trgt"
-            self._attr_native_unit_of_measurement = PERCENTAGE
-            self._attr_state_class = SensorStateClass.MEASUREMENT
-            self._attr_icon = "mdi:gauge"
-        elif sensor_type == "actl":
-            self._attr_translation_key = "node_actl"
-            self._attr_native_unit_of_measurement = PERCENTAGE
-            self._attr_state_class = SensorStateClass.MEASUREMENT
-            self._attr_icon = "mdi:gauge"
-        elif sensor_type == "ovrl":
-            self._attr_translation_key = "node_ovrl"
-            self._attr_native_unit_of_measurement = PERCENTAGE
-            self._attr_state_class = SensorStateClass.MEASUREMENT
-            self._attr_icon = "mdi:gauge"
-        elif sensor_type == "snsr":
-            self._attr_translation_key = "node_snsr"
+        elif sensor_type in {"trgt", "actl", "ovrl", "snsr"}:
             self._attr_native_unit_of_measurement = PERCENTAGE
             self._attr_state_class = SensorStateClass.MEASUREMENT
             self._attr_icon = "mdi:gauge"
         elif sensor_type == "rssi":
-            self._attr_translation_key = "node_rssi"
             self._attr_entity_category = EntityCategory.DIAGNOSTIC
             self._attr_state_class = SensorStateClass.MEASUREMENT
             self._attr_native_unit_of_measurement = "dBm"
             self._attr_icon = "mdi:wifi-strength-2"
             self._attr_entity_registry_enabled_default = False
         elif sensor_type == "cerr":
-            self._attr_translation_key = "node_cerr"
             self._attr_entity_category = EntityCategory.DIAGNOSTIC
             self._attr_state_class = SensorStateClass.TOTAL_INCREASING
             self._attr_icon = "mdi:counter"
@@ -478,6 +468,8 @@ class DucoBoxNodeSensor(CoordinatorEntity[DucoBoxCoordinator], RestoreSensor):
         # registers its listener and fires write_ha_state() immediately.
         if (last_data := await self.async_get_last_sensor_data()) is not None:
             self._last_value = last_data.native_value
+            if self._sensor_type == "ovrl" and self._last_value == 255:
+                self._last_value = None
         await super().async_added_to_hass()
 
     @property
@@ -518,7 +510,7 @@ class DucoBoxNodeSensor(CoordinatorEntity[DucoBoxCoordinator], RestoreSensor):
                 if self._sensor_type == "actl":
                     return node.actl
                 if self._sensor_type == "ovrl":
-                    return node.ovrl
+                    return None if node.ovrl == 255 else node.ovrl
                 if self._sensor_type == "snsr":
                     return node.snsr
                 if self._sensor_type == "rssi":

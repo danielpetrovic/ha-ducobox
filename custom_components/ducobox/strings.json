@@ -22,5 +22,18 @@
       "cannot_connect": "Failed to connect to the discovered device."
     }
   },
-  "title": "DucoBox"
+  "title": "DucoBox",
+  "entity": {
+    "sensor": {
+      "node_temperature": { "name": "Temperature" },
+      "node_co2": { "name": "CO2" },
+      "node_rh": { "name": "Relative Humidity" },
+      "node_trgt": { "name": "Target Airflow" },
+      "node_actl": { "name": "Actual Airflow" },
+      "node_ovrl": { "name": "Override Level" },
+      "node_snsr": { "name": "Sensor Demand" },
+      "node_rssi": { "name": "Signal Strength" },
+      "node_cerr": { "name": "Communication Errors" }
+    }
+  }
 }

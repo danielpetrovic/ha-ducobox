@@ -26,7 +26,7 @@ This integration enables controlling and monitoring DucoBox ventilation systems 
   - **Percentage Slider**: Direct valve flow override (0-100%); 0% fully closes the valve
   - **Preset Modes**: Same modes as the main ventilation fan (Auto, Manual 1/2/3, etc.)
   - **Turn On/Off**: Turn on sets the valve to Auto; turn off sets override to 0% (fully closed)
-  - Each valve is controlled independently — changes do not affect the main box or other nodes
+  - Each valve is controlled independently. Changes do not affect the main box or other nodes
 
 ### Select entities
 
@@ -39,7 +39,7 @@ This integration enables controlling and monitoring DucoBox ventilation systems 
 
 **Room Nodes** *(UCCO2, UCRH, VLVCO2, VLVCO2RH nodes)*:
 - **Temperature Dependent**: Enable temperature-weighted ventilation demand
-- **Humidity Delta**: Enable humidity delta control — UCRH, VLVCO2RH nodes
+- **Humidity Delta**: Enable humidity delta control, UCRH/VLVCO2RH nodes only
 
 ### Button entities
 
@@ -61,12 +61,12 @@ This integration enables controlling and monitoring DucoBox ventilation systems 
 
 **Room Node Configuration** *(UCCO2, UCRH, VLVCO2, VLVCO2RH nodes)*:
 - **Temperature Offset**: Calibrate temperature readings (-3.0°C to +3.0°C, 0.1°C steps)
-- **CO2 Setpoint**: Target CO2 level for demand-based ventilation (ppm) — UCCO2, VLVCO2, VLVCO2RH
-- **Humidity Setpoint**: Target humidity level for demand-based ventilation (%) — UCRH, VLVCO2RH
+- **CO2 Setpoint**: Target CO2 level for demand-based ventilation (ppm), UCCO2/VLVCO2/VLVCO2RH nodes only
+- **Humidity Setpoint**: Target humidity level for demand-based ventilation (%), UCRH/VLVCO2RH nodes only
 - **Manual Speed Level 1/2/3**: Configure flow rates for this node's manual speed presets (%)
-- **Auto Minimum Flow**: Minimum airflow in auto mode for this node (%) — VLV nodes
-- **Auto Maximum Flow**: Maximum airflow in auto mode for this node (%) — VLV nodes
-- **Capacity**: Node ventilation capacity — VLV nodes
+- **Auto Minimum Flow**: Minimum airflow in auto mode for this node (%), VLV nodes only
+- **Auto Maximum Flow**: Maximum airflow in auto mode for this node (%), VLV nodes only
+- **Capacity**: Node ventilation capacity, VLV nodes only
 - **Manual Timeout**: Duration for manual mode before returning to auto (minutes)
 - **Sensor Visualization Level**: Adjust sensor display sensitivity (%)
 
@@ -100,13 +100,15 @@ These sensors are only created when the DucoBox reports actual data for them. On
 Each room is created as a **separate device** with its own sensors:
 - **Temperature**: Temperature sensor for each room (°C)
 - **CO2**: CO2 concentration for each room (ppm)
-- **Relative Humidity**: Relative humidity for each room (%) — when available on RH sensors
-- **Target Airflow**: Target flow level for this node (%) — when reported by the node
-- **Actual Airflow**: Actual current flow level for this node (%) — when reported by the node
-- **Signal Strength**: RSSI signal strength (dBm) — RF (wireless) sensors only (disabled by default)
-- **Communication Errors**: Total communication errors — diagnostic sensor (disabled by default)
+- **Relative Humidity**: Relative humidity for each room (%), when available on RH sensors
+- **Target Airflow**: Target flow level for this node (%), when reported by the node
+- **Actual Airflow**: Actual current flow level for this node (%), when reported by the node
+- **Sensor Demand**: Current ventilation demand from the node sensor (%), when reported by the node
+- **Override Level**: Active override level for this node (%), shows as unknown when no override is active
+- **Signal Strength**: RSSI signal strength (dBm), RF/wireless sensors only (disabled by default)
+- **Communication Errors**: Total communication errors, diagnostic sensor (disabled by default)
 
-Room devices are automatically discovered and created based on the **Location** field configured for each node in your DucoBox Communication Print device.
+Room devices are automatically discovered and created based on the **Location** field configured for each node in your DucoBox Communication Print device. Sensors are created for any node that reports data, supporting all node types.
 
 ## Requirements
 
