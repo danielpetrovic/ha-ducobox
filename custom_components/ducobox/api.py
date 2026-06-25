@@ -360,6 +360,7 @@ class DucoCommunicationPrintApi(DucoApiBase):
                         serialnb=data.get("serialnb"),
                         error=data.get("error"),
                         ovrl=data.get("ovrl"),
+                        snsr=data.get("snsr"),
                         netw=data.get("netw"),
                         cntdwn=data.get("cntdwn"),
                         endtime=data.get("endtime"),
