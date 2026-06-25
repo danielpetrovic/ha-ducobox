@@ -272,6 +272,8 @@ async def async_setup_entry(  # noqa: PLR0915
             or (node.rh is not None and node.rh > 0)
             or node.trgt is not None
             or node.actl is not None
+            or node.ovrl is not None
+            or node.snsr is not None
         )
         if not has_sensors:
             return []
@@ -286,6 +288,10 @@ async def async_setup_entry(  # noqa: PLR0915
             node_entities.append(DucoBoxNodeSensor(coordinator, node, "trgt"))
         if node.actl is not None:
             node_entities.append(DucoBoxNodeSensor(coordinator, node, "actl"))
+        if node.ovrl is not None:
+            node_entities.append(DucoBoxNodeSensor(coordinator, node, "ovrl"))
+        if node.snsr is not None:
+            node_entities.append(DucoBoxNodeSensor(coordinator, node, "snsr"))
         if node.rssi_n2m is not None:
             node_entities.append(DucoBoxNodeSensor(coordinator, node, "rssi"))
         node_entities.append(DucoBoxNodeSensor(coordinator, node, "cerr"))
@@ -380,7 +386,7 @@ class DucoBoxNodeSensor(CoordinatorEntity[DucoBoxCoordinator], RestoreSensor):
 
     _attr_has_entity_name = True
 
-    def __init__(
+    def __init__(  # noqa: PLR0915
         self,
         coordinator: DucoBoxCoordinator,
         node: DucoBoxNodeData,
@@ -439,6 +445,16 @@ class DucoBoxNodeSensor(CoordinatorEntity[DucoBoxCoordinator], RestoreSensor):
             self._attr_icon = "mdi:gauge"
         elif sensor_type == "actl":
             self._attr_translation_key = "node_actl"
+            self._attr_native_unit_of_measurement = PERCENTAGE
+            self._attr_state_class = SensorStateClass.MEASUREMENT
+            self._attr_icon = "mdi:gauge"
+        elif sensor_type == "ovrl":
+            self._attr_translation_key = "node_ovrl"
+            self._attr_native_unit_of_measurement = PERCENTAGE
+            self._attr_state_class = SensorStateClass.MEASUREMENT
+            self._attr_icon = "mdi:gauge"
+        elif sensor_type == "snsr":
+            self._attr_translation_key = "node_snsr"
             self._attr_native_unit_of_measurement = PERCENTAGE
             self._attr_state_class = SensorStateClass.MEASUREMENT
             self._attr_icon = "mdi:gauge"
@@ -501,6 +517,10 @@ class DucoBoxNodeSensor(CoordinatorEntity[DucoBoxCoordinator], RestoreSensor):
                     return node.trgt
                 if self._sensor_type == "actl":
                     return node.actl
+                if self._sensor_type == "ovrl":
+                    return node.ovrl
+                if self._sensor_type == "snsr":
+                    return node.snsr
                 if self._sensor_type == "rssi":
                     return node.rssi_n2m
                 if self._sensor_type == "cerr":

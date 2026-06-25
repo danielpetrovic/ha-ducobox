@@ -207,6 +207,12 @@
             "node_actl": {
                 "name": "Actual Airflow"
             },
+            "node_ovrl": {
+                "name": "Override Level"
+            },
+            "node_snsr": {
+                "name": "Sensor Demand"
+            },
             "node_rssi": {
                 "name": "Signal Strength"
             },

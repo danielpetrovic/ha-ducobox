@@ -31,6 +31,7 @@ class DucoBoxNodeData:
     serialnb: str | None = None  # Serial number
     error: str | None = None  # Error status
     ovrl: int | None = None  # Override level
+    snsr: int | None = None  # Sensor demand value (%)
     netw: str | None = None  # Network type (WI = wired, RF = radio frequency)
     cntdwn: int | None = None  # Countdown timer
     endtime: int | None = None  # End time timestamp
