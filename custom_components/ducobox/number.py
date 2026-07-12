@@ -140,6 +140,94 @@ async def async_setup_entry(  # noqa: PLR0915
                 )
             )
 
+        if ducobox_config.comfort_temp_zone1:
+            entities.append(
+                DucoBoxMainConfigNumber(
+                    coordinator,
+                    entry,
+                    "ComfortTempZone1",
+                    "comfort_temp_zone1",
+                    ducobox_config.comfort_temp_zone1,
+                    UnitOfTemperature.CELSIUS,
+                    "mdi:thermometer",
+                    mode=NumberMode.BOX,
+                    use_deciselsius=True,
+                    temperature_offset=8,
+                )
+            )
+
+        if ducobox_config.comfort_temp_zone2:
+            entities.append(
+                DucoBoxMainConfigNumber(
+                    coordinator,
+                    entry,
+                    "ComfortTempZone2",
+                    "comfort_temp_zone2",
+                    ducobox_config.comfort_temp_zone2,
+                    UnitOfTemperature.CELSIUS,
+                    "mdi:thermometer",
+                    mode=NumberMode.BOX,
+                    use_deciselsius=True,
+                    temperature_offset=8,
+                )
+            )
+
+        if ducobox_config.calib_pin_max_zone1:
+            entities.append(
+                DucoBoxMainConfigNumber(
+                    coordinator,
+                    entry,
+                    "CalibPinMaxZone1",
+                    "calib_pin_max_zone1",
+                    ducobox_config.calib_pin_max_zone1,
+                    "PWM",
+                    "mdi:gauge",
+                    mode=NumberMode.BOX,
+                )
+            )
+
+        if ducobox_config.calib_pin_max_zone2:
+            entities.append(
+                DucoBoxMainConfigNumber(
+                    coordinator,
+                    entry,
+                    "CalibPinMaxZone2",
+                    "calib_pin_max_zone2",
+                    ducobox_config.calib_pin_max_zone2,
+                    "PWM",
+                    "mdi:gauge",
+                    mode=NumberMode.BOX,
+                )
+            )
+
+        if ducobox_config.calib_qin_zone1:
+            entities.append(
+                DucoBoxMainConfigNumber(
+                    coordinator,
+                    entry,
+                    "CalibQinZone1",
+                    "calib_qin_zone1",
+                    ducobox_config.calib_qin_zone1,
+                    "m³/h",
+                    "mdi:air-filter",
+                    mode=NumberMode.BOX,
+                )
+            )
+
+        if ducobox_config.calib_qin_zone2:
+            entities.append(
+                DucoBoxMainConfigNumber(
+                    coordinator,
+                    entry,
+                    "CalibQinZone2",
+                    "calib_qin_zone2",
+                    ducobox_config.calib_qin_zone2,
+                    "m³/h",
+                    "mdi:air-filter",
+                    mode=NumberMode.BOX,
+                )
+            )
+
         if ducobox_config.program_mode_zone1:
             entities.append(
                 DucoBoxMainConfigNumber(

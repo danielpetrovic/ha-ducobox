@@ -96,6 +96,14 @@ class DucoBoxNodeConfig:
     calib_qout: DucoBoxNodeConfigParam | None = None
     program_mode_zone1: DucoBoxNodeConfigParam | None = None
     program_mode_zone2: DucoBoxNodeConfigParam | None = None
+    comfort_temp_zone1: DucoBoxNodeConfigParam | None = None
+    comfort_temp_zone2: DucoBoxNodeConfigParam | None = None
+    calib_pin_max_zone1: DucoBoxNodeConfigParam | None = None
+    calib_pin_max_zone2: DucoBoxNodeConfigParam | None = None
+    calib_qin_zone1: DucoBoxNodeConfigParam | None = None
+    calib_qin_zone2: DucoBoxNodeConfigParam | None = None
+    frost_prot_heater_allowed: DucoBoxNodeConfigParam | None = None
+    frost_prot_passive_house_enable: DucoBoxNodeConfigParam | None = None
     location: str | None = None
 
 

@@ -510,7 +510,10 @@ class DucoBoxNodeSensor(CoordinatorEntity[DucoBoxCoordinator], RestoreSensor):
                 if self._sensor_type == "actl":
                     return node.actl
                 if self._sensor_type == "ovrl":
-                    return None if node.ovrl == 255 else node.ovrl
+                    if node.ovrl == 255:
+                        self._last_value = None
+                        return None
+                    return node.ovrl
                 if self._sensor_type == "snsr":
                     return node.snsr
                 if self._sensor_type == "rssi":

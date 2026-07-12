@@ -42,6 +42,30 @@ async def async_setup_entry(
                 )
             )
 
+        if ducobox_config.frost_prot_heater_allowed is not None:
+            entities.append(
+                DucoBoxMainConfigSwitch(
+                    coordinator,
+                    entry,
+                    "FrostProtHeaterAllowed",
+                    "frost_prot_heater_allowed",
+                    ducobox_config.frost_prot_heater_allowed,
+                    "mdi:snowflake-thermometer",
+                )
+            )
+
+        if ducobox_config.frost_prot_passive_house_enable is not None:
+            entities.append(
+                DucoBoxMainConfigSwitch(
+                    coordinator,
+                    entry,
+                    "FrostProtPassiveHouseEnable",
+                    "frost_prot_passive_house_enable",
+                    ducobox_config.frost_prot_passive_house_enable,
+                    "mdi:home-thermometer-outline",
+                )
+            )
+
     # Add configuration switches for UCCO2 and UCRH nodes
     if coordinator.data and coordinator.data.nodes:
         for node in coordinator.data.nodes:

@@ -505,6 +505,18 @@ class DucoCommunicationPrintApi(DucoApiBase):
                     calib_qout=create_param(energy_data, "CalibQout"),
                     program_mode_zone1=create_param(energy_data, "ProgramModeZone1"),
                     program_mode_zone2=create_param(energy_data, "ProgramModeZone2"),
+                    comfort_temp_zone1=create_param(energy_data, "ComfortTempZone1"),
+                    comfort_temp_zone2=create_param(energy_data, "ComfortTempZone2"),
+                    calib_pin_max_zone1=create_param(energy_data, "CalibPinMaxZone1"),
+                    calib_pin_max_zone2=create_param(energy_data, "CalibPinMaxZone2"),
+                    calib_qin_zone1=create_param(energy_data, "CalibQinZone1"),
+                    calib_qin_zone2=create_param(energy_data, "CalibQinZone2"),
+                    frost_prot_heater_allowed=create_param(
+                        energy_data, "FrostProtHeaterAllowed"
+                    ),
+                    frost_prot_passive_house_enable=create_param(
+                        energy_data, "FrostProtPassiveHouseEnable"
+                    ),
                     location=node_data.get("Location"),
                 )
             # For other nodes, just fetch node config
@@ -540,6 +552,14 @@ class DucoCommunicationPrintApi(DucoApiBase):
                     calib_qout=None,
                     program_mode_zone1=None,
                     program_mode_zone2=None,
+                    comfort_temp_zone1=None,
+                    comfort_temp_zone2=None,
+                    calib_pin_max_zone1=None,
+                    calib_pin_max_zone2=None,
+                    calib_qin_zone1=None,
+                    calib_qin_zone2=None,
+                    frost_prot_heater_allowed=None,
+                    frost_prot_passive_house_enable=None,
                     location=data.get("Location"),
                 )
 
@@ -575,6 +595,14 @@ class DucoCommunicationPrintApi(DucoApiBase):
                 "CalibQout",
                 "ProgramModeZone1",
                 "ProgramModeZone2",
+                "ComfortTempZone1",
+                "ComfortTempZone2",
+                "CalibPinMaxZone1",
+                "CalibPinMaxZone2",
+                "CalibQinZone1",
+                "CalibQinZone2",
+                "FrostProtHeaterAllowed",
+                "FrostProtPassiveHouseEnable",
             }
 
             if node_id == 1 and parameter in box_level_params:

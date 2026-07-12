@@ -36,6 +36,8 @@ This integration enables controlling and monitoring DucoBox ventilation systems 
 
 **Main DucoBox:**
 - **Bypass Adaptive**: Enable/disable adaptive bypass control
+- **Frost Protection Heater**: Allow frost protection heater *(dual-zone hardware only)*
+- **Frost Protection Passive House**: Enable passive house frost protection mode *(dual-zone hardware only)*
 
 **Room Nodes** *(UCCO2, UCRH, VLVCO2, VLVCO2RH nodes)*:
 - **Temperature Dependent**: Enable temperature-weighted ventilation demand
@@ -53,9 +55,12 @@ This integration enables controlling and monitoring DucoBox ventilation systems 
 - **Capacity**: Ventilation system capacity
 - **Manual Speed Level 1/2/3**: Configure flow rates for manual speed presets (%)
 - **Manual Timeout**: Duration for manual mode before returning to auto (minutes)
-- **Comfort Temperature**: Target temperature for bypass control (°C)
-- **Airflow Inlet Pressure Maximum**: Calibration for inlet pressure sensor (Pa)
-- **Airflow Outlet Pressure Maximum**: Calibration for outlet pressure sensor (Pa)
+- **Comfort Temperature**: Target comfort temperature for bypass control (°C) *(single-zone hardware)*
+- **Comfort Temperature Zone 1/2**: Per-zone comfort temperature (°C) *(dual-zone hardware)*
+- **Airflow Inlet Pressure Maximum**: Calibration for inlet pressure sensor (PWM) *(single-zone hardware)*
+- **Airflow Inlet Pressure Maximum Zone 1/2**: Per-zone inlet pressure calibration (PWM) *(dual-zone hardware)*
+- **Airflow Outlet Pressure Maximum**: Calibration for outlet pressure sensor (PWM)
+- **Airflow Input Maximum Zone 1/2**: Per-zone input airflow calibration (m³/h) *(dual-zone hardware)*
 - **Airflow Output Maximum**: Calibration for maximum airflow output (m³/h)
 - **Program Mode Zone 1/2**: Zone program mode settings
 
