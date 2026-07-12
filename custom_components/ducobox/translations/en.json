@@ -85,6 +85,24 @@
             "ducobox_calib_pin_max": {
                 "name": "Airflow Inlet Pressure Maximum"
             },
+            "ducobox_comfort_temp_zone1": {
+                "name": "Comfort Temperature Zone 1"
+            },
+            "ducobox_comfort_temp_zone2": {
+                "name": "Comfort Temperature Zone 2"
+            },
+            "ducobox_calib_pin_max_zone1": {
+                "name": "Airflow Inlet Pressure Maximum Zone 1"
+            },
+            "ducobox_calib_pin_max_zone2": {
+                "name": "Airflow Inlet Pressure Maximum Zone 2"
+            },
+            "ducobox_calib_qin_zone1": {
+                "name": "Airflow Input Maximum Zone 1"
+            },
+            "ducobox_calib_qin_zone2": {
+                "name": "Airflow Input Maximum Zone 2"
+            },
             "ducobox_calib_pout_max": {
                 "name": "Airflow Outlet Pressure Maximum"
             },
@@ -107,6 +125,12 @@
             },
             "ducobox_bypass_adaptive": {
                 "name": "Bypass Adaptive"
+            },
+            "ducobox_frost_prot_heater_allowed": {
+                "name": "Frost Protection Heater"
+            },
+            "ducobox_frost_prot_passive_house_enable": {
+                "name": "Frost Protection Passive House"
             }
         },
         "button": {
