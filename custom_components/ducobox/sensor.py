@@ -14,10 +14,10 @@ from homeassistant.components.sensor import (
     SensorStateClass,
 )
 from homeassistant.const import (
-    CONCENTRATION_PARTS_PER_MILLION,
     CONF_HOST,
     PERCENTAGE,
     REVOLUTIONS_PER_MINUTE,
+    UnitOfRatio,
     UnitOfTemperature,
     UnitOfTime,
 )
@@ -439,7 +439,7 @@ class DucoBoxNodeSensor(CoordinatorEntity[DucoBoxCoordinator], RestoreSensor):
             self._attr_suggested_display_precision = 1
         elif sensor_type == "co2":
             self._attr_device_class = SensorDeviceClass.CO2
-            self._attr_native_unit_of_measurement = CONCENTRATION_PARTS_PER_MILLION
+            self._attr_native_unit_of_measurement = UnitOfRatio.PARTS_PER_MILLION
             self._attr_state_class = SensorStateClass.MEASUREMENT
         elif sensor_type == "rh":
             self._attr_device_class = SensorDeviceClass.HUMIDITY
