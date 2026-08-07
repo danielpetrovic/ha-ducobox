@@ -216,6 +216,12 @@
             "exhaust_fan_pwm": {
                 "name": "Exhaust Fan PWM"
             },
+            "frost_prot_heater_level": {
+                "name": "Frost Protection Heater Level"
+            },
+            "frost_prot_press_reduct": {
+                "name": "Frost Protection Pressure Reduction"
+            },
             "node_temperature": {
                 "name": "Temperature"
             },

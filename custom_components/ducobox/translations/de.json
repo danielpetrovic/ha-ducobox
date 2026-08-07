@@ -1,0 +1,254 @@
+{
+    "config": {
+        "abort": {
+            "already_configured": "Gerät ist bereits konfiguriert",
+            "cannot_connect": "Verbindung mit gefundenem Gerät fehlgeschlagen"
+        },
+        "error": {
+            "cannot_connect": "Verbindung fehlgeschlagen",
+            "unknown": "Unerwarteter Fehler"
+        },
+        "step": {
+            "user": {
+                "data": {
+                    "host": "Host"
+                },
+                "data_description": {
+                    "host": "Der Hostname oder die IP-Adresse Ihres DucoBox Communication Print Geräts."
+                }
+            },
+            "zeroconf_confirm": {
+                "title": "DucoBox-Gerät entdeckt",
+                "description": "Möchten Sie {name} bei {host} zu Home Assistant hinzufügen?"
+            }
+        }
+    },
+    "entity": {
+        "number": {
+            "node_temp_offset": {
+                "name": "Temperaturversatz"
+            },
+            "node_co2_setpoint": {
+                "name": "CO2-Sollwert"
+            },
+            "node_rh_setpoint": {
+                "name": "Feuchtigkeitssollwert"
+            },
+            "node_auto_min": {
+                "name": "Automatischer Mindestluftdurchsatz"
+            },
+            "node_auto_max": {
+                "name": "Automatischer Maximalluftdurchsatz"
+            },
+            "node_capacity": {
+                "name": "Kapazität"
+            },
+            "node_manual1": {
+                "name": "Manuelle Geschwindigkeit Stufe 1"
+            },
+            "node_manual2": {
+                "name": "Manuelle Geschwindigkeit Stufe 2"
+            },
+            "node_manual3": {
+                "name": "Manuelle Geschwindigkeit Stufe 3"
+            },
+            "node_manual_timeout": {
+                "name": "Manuelles Timeout"
+            },
+            "node_sensor_visu_level": {
+                "name": "Sensorvisualisierungsstufe"
+            },
+            "ducobox_auto_min": {
+                "name": "Automatischer Mindestluftdurchsatz"
+            },
+            "ducobox_auto_max": {
+                "name": "Automatischer Maximalluftdurchsatz"
+            },
+            "ducobox_capacity": {
+                "name": "Kapazität"
+            },
+            "ducobox_manual1": {
+                "name": "Manuelle Geschwindigkeit Stufe 1"
+            },
+            "ducobox_manual2": {
+                "name": "Manuelle Geschwindigkeit Stufe 2"
+            },
+            "ducobox_manual3": {
+                "name": "Manuelle Geschwindigkeit Stufe 3"
+            },
+            "ducobox_manual_timeout": {
+                "name": "Manuelles Timeout"
+            },
+            "ducobox_comfort_temperature": {
+                "name": "Komforttemperatur"
+            },
+            "ducobox_calib_pin_max": {
+                "name": "Maximaler Einlassdruck"
+            },
+            "ducobox_comfort_temp_zone1": {
+                "name": "Komforttemperatur Zone 1"
+            },
+            "ducobox_comfort_temp_zone2": {
+                "name": "Komforttemperatur Zone 2"
+            },
+            "ducobox_calib_pin_max_zone1": {
+                "name": "Maximaler Einlassdruck Zone 1"
+            },
+            "ducobox_calib_pin_max_zone2": {
+                "name": "Maximaler Einlassdruck Zone 2"
+            },
+            "ducobox_calib_qin_zone1": {
+                "name": "Maximaler Luftdurchsatz Einlass Zone 1"
+            },
+            "ducobox_calib_qin_zone2": {
+                "name": "Maximaler Luftdurchsatz Einlass Zone 2"
+            },
+            "ducobox_calib_pout_max": {
+                "name": "Maximaler Auslassdruck"
+            },
+            "ducobox_calib_qout": {
+                "name": "Maximaler Luftdurchsatz Auslass"
+            },
+            "ducobox_program_mode_zone1": {
+                "name": "Programmmodus Zone 1"
+            },
+            "ducobox_program_mode_zone2": {
+                "name": "Programmmodus Zone 2"
+            }
+        },
+        "switch": {
+            "node_temp_dependent": {
+                "name": "Temperaturabhängig"
+            },
+            "node_rh_delta": {
+                "name": "Feuchtigkeitsdelta"
+            },
+            "ducobox_bypass_adaptive": {
+                "name": "Adaptiver Bypass"
+            },
+            "ducobox_frost_prot_heater_allowed": {
+                "name": "Frostschutzheizkörper"
+            },
+            "ducobox_frost_prot_passive_house_enable": {
+                "name": "Frostschutz Passivhaus"
+            }
+        },
+        "button": {
+            "ducobox_filter_reset": {
+                "name": "Filtertimer zurücksetzen"
+            }
+        },
+        "fan": {
+            "ventilation": {
+                "name": "Lüftung"
+            },
+            "node_ventilation": {
+                "name": "Lüftung"
+            }
+        },
+        "select": {
+            "ventilation_state": {
+                "name": "Lüftungszustand"
+            },
+            "ducobox_bypass_mode": {
+                "name": "Bypassmodus",
+                "state": {
+                    "automatic": "Automatisch",
+                    "closed": "Geschlossen",
+                    "open": "Offen"
+                }
+            }
+        },
+        "sensor": {
+            "flow_lvl_tgt": {
+                "name": "Luftdurchsatz-Sollwert"
+            },
+            "iaq_rh": {
+                "name": "Luftqualitätsindex relative Luftfeuchte"
+            },
+            "mode": {
+                "name": "Lüftungsmodus",
+                "state": {
+                    "auto": "Auto",
+                    "manu": "Manuell",
+                    "extn": "Überschreiben"
+                }
+            },
+            "rh": {
+                "name": "Relative Luftfeuchte"
+            },
+            "state": {
+                "name": "Lüftungszustand"
+            },
+            "time_state_end": {
+                "name": "Endzeit des Lüftungszustands"
+            },
+            "time_state_remain": {
+                "name": "Verbleibende Zeit des Lüftungszustands"
+            },
+            "temp_oda": {
+                "name": "Außentemperatur"
+            },
+            "temp_sup": {
+                "name": "Zulufttemperatur"
+            },
+            "temp_eta": {
+                "name": "Ablufttemperatur"
+            },
+            "temp_eha": {
+                "name": "Fortlufttemperatur"
+            },
+            "bypass_status": {
+                "name": "Bypassstatus"
+            },
+            "filter_remaining_time": {
+                "name": "Verbleibende Filterstandzeit"
+            },
+            "supply_fan_speed": {
+                "name": "Zuluftventilator-Drehzahl"
+            },
+            "supply_fan_pwm": {
+                "name": "Zuluftventilator PWM"
+            },
+            "exhaust_fan_speed": {
+                "name": "Abluftventilator-Drehzahl"
+            },
+            "exhaust_fan_pwm": {
+                "name": "Abluftventilator PWM"
+            },
+            "frost_prot_heater_level": {
+                "name": "Frostschutzheizung Leistungsstufe"
+            },
+            "frost_prot_press_reduct": {
+                "name": "Frostschutz Druckreduzierung"
+            },
+            "node_temperature": {
+                "name": "Temperatur"
+            },
+            "node_co2": {
+                "name": "CO2"
+            },
+            "node_rh": {
+                "name": "Relative Luftfeuchte"
+            },
+            "node_trgt": {
+                "name": "Soll-Luftdurchsatz"
+            },
+            "node_actl": {
+                "name": "Ist-Luftdurchsatz"
+            },
+            "node_ovrl": {
+                "name": "Überschreibungsstufe"
+            },
+            "node_snsr": {
+                "name": "Sensoranforderung"
+            },
+            "node_rssi": {
+                "name": "Signalstärke"
+            },
+            "node_cerr": {
+                "name": "Kommunikationsfehler"
+            }
+        }
+    }
+}

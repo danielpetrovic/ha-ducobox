@@ -58,6 +58,10 @@ class DucoBoxEnergyInfo:
     supply_fan_pwm_percentage: int | None = None  # Supply fan PWM (%)
     exhaust_fan_speed: int | None = None  # Exhaust fan RPM
     exhaust_fan_pwm_percentage: int | None = None  # Exhaust fan PWM (%)
+    frost_prot_heater_level: int | None = None  # Frost protection heater level (%)
+    frost_prot_press_reduct: int | None = (
+        None  # Frost protection pressure reduction (%)
+    )
 
 
 @dataclass

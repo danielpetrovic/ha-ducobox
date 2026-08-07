@@ -19,9 +19,6 @@ from .models import DucoBoxNodeData
 PRESET_MODE_AUTO = "Auto"
 PRESET_MODE_AWAY = "Away"
 
-# Devtypes that get per-node fan control entities
-_VLV_DEVTYPES = {"VLVCO2", "VLVCO2RH"}
-
 
 async def async_setup_entry(
     hass: HomeAssistant,  # noqa: ARG001
@@ -33,33 +30,38 @@ async def async_setup_entry(
 
     async_add_entities([DucoBoxFan(coordinator)])
 
-    # Track which VLV node IDs already have fan entities created.
-    known_vlv_node_ids: set[int] = set()
+    # Track which node IDs already have fan entities created.
+    known_node_ids: set[int] = set()
 
-    # Create fan entities for any VLV nodes already known at startup.
+    # Create fan entities for any controllable nodes already known at startup.
     if coordinator.data and coordinator.data.nodes:
         initial_entities = []
         for node in coordinator.data.nodes:
-            if node.devtype in _VLV_DEVTYPES:
+            if node.ovrl is not None and node.mode is not None and node.devtype != "UC":
                 initial_entities.append(DucoBoxNodeFan(coordinator, node))
-                known_vlv_node_ids.add(node.node_id)
+                known_node_ids.add(node.node_id)
         if initial_entities:
             async_add_entities(initial_entities)
 
     @callback
-    def _async_add_vlv_node_fans() -> None:
-        """Create fan entities for newly discovered VLV nodes."""
+    def _async_add_node_fans() -> None:
+        """Create fan entities for newly discovered controllable nodes."""
         if not coordinator.data or not coordinator.data.nodes:
             return
         new_entities = []
         for node in coordinator.data.nodes:
-            if node.devtype in _VLV_DEVTYPES and node.node_id not in known_vlv_node_ids:
+            if (
+                node.ovrl is not None
+                and node.mode is not None
+                and node.devtype != "UC"
+                and node.node_id not in known_node_ids
+            ):
                 new_entities.append(DucoBoxNodeFan(coordinator, node))
-                known_vlv_node_ids.add(node.node_id)
+                known_node_ids.add(node.node_id)
         if new_entities:
             async_add_entities(new_entities)
 
-    entry.async_on_unload(coordinator.async_add_listener(_async_add_vlv_node_fans))
+    entry.async_on_unload(coordinator.async_add_listener(_async_add_node_fans))
 
 
 class DucoBoxFan(DucoBoxEntity, FanEntity):
@@ -148,9 +150,10 @@ class DucoBoxFan(DucoBoxEntity, FanEntity):
 
 
 class DucoBoxNodeFan(CoordinatorEntity[DucoBoxCoordinator], FanEntity):
-    """Per-node fan entity for independently controllable VLV valves."""
+    """Per-node fan entity for controllable room nodes."""
 
     _attr_has_entity_name = True
+    _attr_entity_registry_enabled_default = False
     _attr_supported_features = (
         FanEntityFeature.SET_SPEED
         | FanEntityFeature.PRESET_MODE
@@ -223,6 +226,9 @@ class DucoBoxNodeFan(CoordinatorEntity[DucoBoxCoordinator], FanEntity):
             return None
         # When in override mode (EXTN), no preset is active
         if node.mode == "EXTN":
+            return None
+        # Only return state if it's a known preset mode (raw "-" means no active mode)
+        if node.state not in (self._attr_preset_modes or []):
             return None
         return node.state
 

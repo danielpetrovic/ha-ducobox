@@ -22,11 +22,12 @@ This integration enables controlling and monitoring DucoBox ventilation systems 
   - **Turn On/Off**: Sets to Auto mode when turned on
   - Percentage slider clears any active preset; selecting a preset clears the override
 
-- **Room Valve** *(VLVCO2 and VLVCO2RH nodes only)*: Per-valve fan entity for independently controllable valves
-  - **Percentage Slider**: Direct valve flow override (0-100%); 0% fully closes the valve
+- **Room Node Ventilation** *(all controllable nodes, disabled by default)*: Per-node fan entity for zone-level ventilation control
+  - **Percentage Slider**: Direct flow override (0-100%); 0% fully closes the valve
   - **Preset Modes**: Same modes as the main ventilation fan (Auto, Manual 1/2/3, etc.)
-  - **Turn On/Off**: Turn on sets the valve to Auto; turn off sets override to 0% (fully closed)
-  - Each valve is controlled independently. Changes do not affect the main box or other nodes
+  - **Turn On/Off**: Turn on sets the node to Auto; turn off sets override to 0% (fully closed)
+  - Disabled by default; enable per device in HA if zone-level control is needed
+  - Created for any node that reports `mode` and `ovrl` fields, including VLVCO2, VLVCO2RH, UCCO2, UCRH, and unrecognized (UNKN) device types
 
 ### Select entities
 
@@ -99,6 +100,8 @@ These sensors are only created when the DucoBox reports actual data for them. On
 - **Supply Fan PWM**: Supply fan PWM percentage (%)
 - **Exhaust Fan Speed**: Exhaust fan speed (RPM)
 - **Exhaust Fan PWM**: Exhaust fan PWM percentage (%)
+- **Frost Protection Heater Level**: Real-time preheater output level (%) *(only on boxes with a preheater module)*
+- **Frost Protection Pressure Reduction**: Pressure disbalance frost protection level (%) *(only on boxes without a preheater)*
 
 **Room Node Sensors** (automatically discovered):
 

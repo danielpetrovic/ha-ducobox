@@ -1,0 +1,254 @@
+{
+    "config": {
+        "abort": {
+            "already_configured": "Apparaat is al geconfigureerd",
+            "cannot_connect": "Verbinding met gevonden apparaat mislukt"
+        },
+        "error": {
+            "cannot_connect": "Verbinding mislukt",
+            "unknown": "Onverwachte fout"
+        },
+        "step": {
+            "user": {
+                "data": {
+                    "host": "Host"
+                },
+                "data_description": {
+                    "host": "De hostnaam of het IP-adres van uw DucoBox Communication Print apparaat."
+                }
+            },
+            "zeroconf_confirm": {
+                "title": "DucoBox-apparaat gevonden",
+                "description": "Wilt u {name} op {host} toevoegen aan Home Assistant?"
+            }
+        }
+    },
+    "entity": {
+        "number": {
+            "node_temp_offset": {
+                "name": "Temperatuurcorrectie"
+            },
+            "node_co2_setpoint": {
+                "name": "CO2-setpoint"
+            },
+            "node_rh_setpoint": {
+                "name": "Vochtigheidssetpoint"
+            },
+            "node_auto_min": {
+                "name": "Auto minimale luchtstroom"
+            },
+            "node_auto_max": {
+                "name": "Auto maximale luchtstroom"
+            },
+            "node_capacity": {
+                "name": "Capaciteit"
+            },
+            "node_manual1": {
+                "name": "Handmatige snelheid niveau 1"
+            },
+            "node_manual2": {
+                "name": "Handmatige snelheid niveau 2"
+            },
+            "node_manual3": {
+                "name": "Handmatige snelheid niveau 3"
+            },
+            "node_manual_timeout": {
+                "name": "Handmatige time-out"
+            },
+            "node_sensor_visu_level": {
+                "name": "Sensorvisualisatieniveau"
+            },
+            "ducobox_auto_min": {
+                "name": "Auto minimale luchtstroom"
+            },
+            "ducobox_auto_max": {
+                "name": "Auto maximale luchtstroom"
+            },
+            "ducobox_capacity": {
+                "name": "Capaciteit"
+            },
+            "ducobox_manual1": {
+                "name": "Handmatige snelheid niveau 1"
+            },
+            "ducobox_manual2": {
+                "name": "Handmatige snelheid niveau 2"
+            },
+            "ducobox_manual3": {
+                "name": "Handmatige snelheid niveau 3"
+            },
+            "ducobox_manual_timeout": {
+                "name": "Handmatige time-out"
+            },
+            "ducobox_comfort_temperature": {
+                "name": "Comforttemperatuur"
+            },
+            "ducobox_calib_pin_max": {
+                "name": "Maximum inlaatdruk luchtstroom"
+            },
+            "ducobox_comfort_temp_zone1": {
+                "name": "Comforttemperatuur zone 1"
+            },
+            "ducobox_comfort_temp_zone2": {
+                "name": "Comforttemperatuur zone 2"
+            },
+            "ducobox_calib_pin_max_zone1": {
+                "name": "Maximum inlaatdruk luchtstroom zone 1"
+            },
+            "ducobox_calib_pin_max_zone2": {
+                "name": "Maximum inlaatdruk luchtstroom zone 2"
+            },
+            "ducobox_calib_qin_zone1": {
+                "name": "Maximum luchtstroom inlaat zone 1"
+            },
+            "ducobox_calib_qin_zone2": {
+                "name": "Maximum luchtstroom inlaat zone 2"
+            },
+            "ducobox_calib_pout_max": {
+                "name": "Maximum uitlaatdruk luchtstroom"
+            },
+            "ducobox_calib_qout": {
+                "name": "Maximum luchtstroom uitlaat"
+            },
+            "ducobox_program_mode_zone1": {
+                "name": "Programmamodus zone 1"
+            },
+            "ducobox_program_mode_zone2": {
+                "name": "Programmamodus zone 2"
+            }
+        },
+        "switch": {
+            "node_temp_dependent": {
+                "name": "Temperatuurafhankelijk"
+            },
+            "node_rh_delta": {
+                "name": "Vochtigheidsdelta"
+            },
+            "ducobox_bypass_adaptive": {
+                "name": "Adaptieve bypass"
+            },
+            "ducobox_frost_prot_heater_allowed": {
+                "name": "Vorstbeveiliging verwarmer"
+            },
+            "ducobox_frost_prot_passive_house_enable": {
+                "name": "Vorstbeveiliging passiefhuis"
+            }
+        },
+        "button": {
+            "ducobox_filter_reset": {
+                "name": "Filtertimer resetten"
+            }
+        },
+        "fan": {
+            "ventilation": {
+                "name": "Ventilatie"
+            },
+            "node_ventilation": {
+                "name": "Ventilatie"
+            }
+        },
+        "select": {
+            "ventilation_state": {
+                "name": "Ventilatietoestand"
+            },
+            "ducobox_bypass_mode": {
+                "name": "Bypassmodus",
+                "state": {
+                    "automatic": "Automatisch",
+                    "closed": "Gesloten",
+                    "open": "Open"
+                }
+            }
+        },
+        "sensor": {
+            "flow_lvl_tgt": {
+                "name": "Doelluchtstroom"
+            },
+            "iaq_rh": {
+                "name": "Luchtkwaliteitsindex relatieve vochtigheid"
+            },
+            "mode": {
+                "name": "Ventilatiemodus",
+                "state": {
+                    "auto": "Auto",
+                    "manu": "Handmatig",
+                    "extn": "Overschreven"
+                }
+            },
+            "rh": {
+                "name": "Relatieve vochtigheid"
+            },
+            "state": {
+                "name": "Ventilatietoestand"
+            },
+            "time_state_end": {
+                "name": "Eindtijd ventilatietoestand"
+            },
+            "time_state_remain": {
+                "name": "Resterende tijd ventilatietoestand"
+            },
+            "temp_oda": {
+                "name": "Buitentemperatuur"
+            },
+            "temp_sup": {
+                "name": "Aanvoertemperatuur"
+            },
+            "temp_eta": {
+                "name": "Retourtemperatuur"
+            },
+            "temp_eha": {
+                "name": "Uitblaastemperatuur"
+            },
+            "bypass_status": {
+                "name": "Bypassstatus"
+            },
+            "filter_remaining_time": {
+                "name": "Resterende filtertijd"
+            },
+            "supply_fan_speed": {
+                "name": "Toerental aanvoerventilator"
+            },
+            "supply_fan_pwm": {
+                "name": "Aanvoerventilator PWM"
+            },
+            "exhaust_fan_speed": {
+                "name": "Toerental afvoerventilator"
+            },
+            "exhaust_fan_pwm": {
+                "name": "Afvoerventilator PWM"
+            },
+            "frost_prot_heater_level": {
+                "name": "Vorstbeveiliging verwarmingsniveau"
+            },
+            "frost_prot_press_reduct": {
+                "name": "Vorstbeveiliging drukreductie"
+            },
+            "node_temperature": {
+                "name": "Temperatuur"
+            },
+            "node_co2": {
+                "name": "CO2"
+            },
+            "node_rh": {
+                "name": "Relatieve vochtigheid"
+            },
+            "node_trgt": {
+                "name": "Doelluchtstroom"
+            },
+            "node_actl": {
+                "name": "Werkelijke luchtstroom"
+            },
+            "node_ovrl": {
+                "name": "Overschrijvingsniveau"
+            },
+            "node_snsr": {
+                "name": "Sensorvraag"
+            },
+            "node_rssi": {
+                "name": "Signaalsterkte"
+            },
+            "node_cerr": {
+                "name": "Communicatiefouten"
+            }
+        }
+    }
+}

@@ -150,10 +150,7 @@ if fetch_energy:
     self._last_energy_fetch = now
 
 # Call API with conditional flags
-data = await self.api.async_get_data(
-    fetch_energy=fetch_energy,
-    fetch_nodes=fetch_nodes
-)
+data = await self.api.async_get_data(fetch_energy=fetch_energy, fetch_nodes=fetch_nodes)
 
 # Update caches when data is fetched
 if fetch_energy and data.energy_info:
@@ -294,8 +291,8 @@ All entities have logical MDI icons:
 **Scan Strategy:**
 ```python
 node_ranges = [
-    range(2, 11),    # Common room sensors (2-10)
-    range(50, 101)   # Box sensors like UCRH (50-100)
+    range(2, 11),  # Common room sensors (2-10)
+    range(50, 101),  # Box sensors like UCRH (50-100)
 ]
 ```
 
@@ -359,9 +356,15 @@ node_ranges = [
 **Code Pattern:**
 ```python
 box_level_params = {
-    "BypassMode", "BypassAdaptive", "ComfortTemperature",
-    "FilterReset", "CalibPinMax", "CalibPoutMax", "CalibQout",
-    "ProgramModeZone1", "ProgramModeZone2"
+    "BypassMode",
+    "BypassAdaptive",
+    "ComfortTemperature",
+    "FilterReset",
+    "CalibPinMax",
+    "CalibPoutMax",
+    "CalibQout",
+    "ProgramModeZone1",
+    "ProgramModeZone2",
 }
 
 if node_id == 1 and parameter in box_level_params:
@@ -388,6 +391,7 @@ class DucoApiBase(ABC):
         pass
 
     # 8 more abstract methods...
+
 
 class DucoCommunicationPrintApi(DucoApiBase):
     # Concrete implementation
@@ -494,9 +498,7 @@ if config and config.new_parameter:
     )
 
 # 2. Set method in number.py already handles it (no change needed)
-await self.coordinator.api.async_set_node_config(
-    self._node_id, self._parameter, value
-)
+await self.coordinator.api.async_set_node_config(self._node_id, self._parameter, value)
 ```
 
 **Adding New Sensor:**

@@ -324,6 +324,8 @@ class DucoCommunicationPrintApi(DucoApiBase):
                 supply_fan_pwm_percentage=fan_data.get("SupplyFanPwmPercentage"),
                 exhaust_fan_speed=fan_data.get("ExhaustFanSpeed"),
                 exhaust_fan_pwm_percentage=fan_data.get("ExhaustFanPwmPercentage"),
+                frost_prot_heater_level=energy_data.get("FrostProtHeaterLevel"),
+                frost_prot_press_reduct=energy_data.get("FrostProtPressReduct"),
             )
         except Exception as err:  # noqa: BLE001
             _LOGGER.debug("Failed to get energy info: %s", err)

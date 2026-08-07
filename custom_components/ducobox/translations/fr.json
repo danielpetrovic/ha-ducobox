@@ -1,0 +1,254 @@
+{
+    "config": {
+        "abort": {
+            "already_configured": "L'appareil est déjà configuré",
+            "cannot_connect": "Échec de la connexion à l'appareil découvert"
+        },
+        "error": {
+            "cannot_connect": "Échec de la connexion",
+            "unknown": "Erreur inattendue"
+        },
+        "step": {
+            "user": {
+                "data": {
+                    "host": "Hôte"
+                },
+                "data_description": {
+                    "host": "Le nom d'hôte ou l'adresse IP de votre appareil DucoBox Communication Print."
+                }
+            },
+            "zeroconf_confirm": {
+                "title": "Appareil DucoBox découvert",
+                "description": "Voulez-vous ajouter {name} à {host} dans Home Assistant ?"
+            }
+        }
+    },
+    "entity": {
+        "number": {
+            "node_temp_offset": {
+                "name": "Décalage de température"
+            },
+            "node_co2_setpoint": {
+                "name": "Consigne CO2"
+            },
+            "node_rh_setpoint": {
+                "name": "Consigne d'humidité"
+            },
+            "node_auto_min": {
+                "name": "Débit minimum automatique"
+            },
+            "node_auto_max": {
+                "name": "Débit maximum automatique"
+            },
+            "node_capacity": {
+                "name": "Capacité"
+            },
+            "node_manual1": {
+                "name": "Vitesse manuelle niveau 1"
+            },
+            "node_manual2": {
+                "name": "Vitesse manuelle niveau 2"
+            },
+            "node_manual3": {
+                "name": "Vitesse manuelle niveau 3"
+            },
+            "node_manual_timeout": {
+                "name": "Délai manuel"
+            },
+            "node_sensor_visu_level": {
+                "name": "Niveau de visualisation du capteur"
+            },
+            "ducobox_auto_min": {
+                "name": "Débit minimum automatique"
+            },
+            "ducobox_auto_max": {
+                "name": "Débit maximum automatique"
+            },
+            "ducobox_capacity": {
+                "name": "Capacité"
+            },
+            "ducobox_manual1": {
+                "name": "Vitesse manuelle niveau 1"
+            },
+            "ducobox_manual2": {
+                "name": "Vitesse manuelle niveau 2"
+            },
+            "ducobox_manual3": {
+                "name": "Vitesse manuelle niveau 3"
+            },
+            "ducobox_manual_timeout": {
+                "name": "Délai manuel"
+            },
+            "ducobox_comfort_temperature": {
+                "name": "Température de confort"
+            },
+            "ducobox_calib_pin_max": {
+                "name": "Pression d'entrée d'air maximale"
+            },
+            "ducobox_comfort_temp_zone1": {
+                "name": "Température de confort zone 1"
+            },
+            "ducobox_comfort_temp_zone2": {
+                "name": "Température de confort zone 2"
+            },
+            "ducobox_calib_pin_max_zone1": {
+                "name": "Pression d'entrée d'air maximale zone 1"
+            },
+            "ducobox_calib_pin_max_zone2": {
+                "name": "Pression d'entrée d'air maximale zone 2"
+            },
+            "ducobox_calib_qin_zone1": {
+                "name": "Débit d'entrée maximum zone 1"
+            },
+            "ducobox_calib_qin_zone2": {
+                "name": "Débit d'entrée maximum zone 2"
+            },
+            "ducobox_calib_pout_max": {
+                "name": "Pression de sortie d'air maximale"
+            },
+            "ducobox_calib_qout": {
+                "name": "Débit de sortie maximum"
+            },
+            "ducobox_program_mode_zone1": {
+                "name": "Mode programme zone 1"
+            },
+            "ducobox_program_mode_zone2": {
+                "name": "Mode programme zone 2"
+            }
+        },
+        "switch": {
+            "node_temp_dependent": {
+                "name": "Dépendant de la température"
+            },
+            "node_rh_delta": {
+                "name": "Delta d'humidité"
+            },
+            "ducobox_bypass_adaptive": {
+                "name": "Bypass adaptatif"
+            },
+            "ducobox_frost_prot_heater_allowed": {
+                "name": "Chauffage antigel"
+            },
+            "ducobox_frost_prot_passive_house_enable": {
+                "name": "Antigel maison passive"
+            }
+        },
+        "button": {
+            "ducobox_filter_reset": {
+                "name": "Réinitialiser le minuteur du filtre"
+            }
+        },
+        "fan": {
+            "ventilation": {
+                "name": "Ventilation"
+            },
+            "node_ventilation": {
+                "name": "Ventilation"
+            }
+        },
+        "select": {
+            "ventilation_state": {
+                "name": "État de ventilation"
+            },
+            "ducobox_bypass_mode": {
+                "name": "Mode bypass",
+                "state": {
+                    "automatic": "Automatique",
+                    "closed": "Fermé",
+                    "open": "Ouvert"
+                }
+            }
+        },
+        "sensor": {
+            "flow_lvl_tgt": {
+                "name": "Niveau de débit cible"
+            },
+            "iaq_rh": {
+                "name": "Indice de qualité de l'air - Humidité relative"
+            },
+            "mode": {
+                "name": "Mode de ventilation",
+                "state": {
+                    "auto": "Auto",
+                    "manu": "Manuel",
+                    "extn": "Substitution"
+                }
+            },
+            "rh": {
+                "name": "Humidité relative"
+            },
+            "state": {
+                "name": "État de ventilation"
+            },
+            "time_state_end": {
+                "name": "Heure de fin d'état de ventilation"
+            },
+            "time_state_remain": {
+                "name": "Temps restant de l'état de ventilation"
+            },
+            "temp_oda": {
+                "name": "Température extérieure"
+            },
+            "temp_sup": {
+                "name": "Température de soufflage"
+            },
+            "temp_eta": {
+                "name": "Température d'extraction"
+            },
+            "temp_eha": {
+                "name": "Température d'échappement"
+            },
+            "bypass_status": {
+                "name": "État du bypass"
+            },
+            "filter_remaining_time": {
+                "name": "Durée restante du filtre"
+            },
+            "supply_fan_speed": {
+                "name": "Vitesse du ventilateur de soufflage"
+            },
+            "supply_fan_pwm": {
+                "name": "PWM du ventilateur de soufflage"
+            },
+            "exhaust_fan_speed": {
+                "name": "Vitesse du ventilateur d'extraction"
+            },
+            "exhaust_fan_pwm": {
+                "name": "PWM du ventilateur d'extraction"
+            },
+            "frost_prot_heater_level": {
+                "name": "Niveau du chauffage antigel"
+            },
+            "frost_prot_press_reduct": {
+                "name": "Réduction de pression antigel"
+            },
+            "node_temperature": {
+                "name": "Température"
+            },
+            "node_co2": {
+                "name": "CO2"
+            },
+            "node_rh": {
+                "name": "Humidité relative"
+            },
+            "node_trgt": {
+                "name": "Débit d'air cible"
+            },
+            "node_actl": {
+                "name": "Débit d'air réel"
+            },
+            "node_ovrl": {
+                "name": "Niveau de substitution"
+            },
+            "node_snsr": {
+                "name": "Demande du capteur"
+            },
+            "node_rssi": {
+                "name": "Force du signal"
+            },
+            "node_cerr": {
+                "name": "Erreurs de communication"
+            }
+        }
+    }
+}

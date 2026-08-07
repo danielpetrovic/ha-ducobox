@@ -200,6 +200,26 @@ SENSORS: tuple[DucoBoxSensorEntityDescription, ...] = (
             data.energy_info.exhaust_fan_pwm_percentage if data.energy_info else None
         ),
     ),
+    DucoBoxSensorEntityDescription(
+        key="frost_prot_heater_level",
+        translation_key="frost_prot_heater_level",
+        native_unit_of_measurement=PERCENTAGE,
+        state_class=SensorStateClass.MEASUREMENT,
+        icon="mdi:heating-coil",
+        value_fn=lambda data: (
+            data.energy_info.frost_prot_heater_level if data.energy_info else None
+        ),
+    ),
+    DucoBoxSensorEntityDescription(
+        key="frost_prot_press_reduct",
+        translation_key="frost_prot_press_reduct",
+        native_unit_of_measurement=PERCENTAGE,
+        state_class=SensorStateClass.MEASUREMENT,
+        icon="mdi:gauge",
+        value_fn=lambda data: (
+            data.energy_info.frost_prot_press_reduct if data.energy_info else None
+        ),
+    ),
 )
 
 
@@ -214,6 +234,8 @@ _ENERGY_SENSOR_KEYS = {
     "supply_fan_pwm",
     "exhaust_fan_speed",
     "exhaust_fan_pwm",
+    "frost_prot_heater_level",
+    "frost_prot_press_reduct",
 }
 
 _CORE_SENSOR_KEYS = {"state", "mode", "flow_lvl_tgt", "rh"}
