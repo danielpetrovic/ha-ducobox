@@ -96,12 +96,12 @@ class DucoBoxCoordinator(DataUpdateCoordinator[DucoBoxData]):
                 fetch_nodes=fetch_nodes,
             )
 
-            # Only flip after success — failed ticks retry the same type next tick
+            # Only flip after success; failed ticks retry the same type next tick
             self._fetch_energy_next = not self._fetch_energy_next
 
             if fetch_energy:
                 if data.energy_info is not None:
-                    # Only update cache when we got real data — keep old cache on failure
+                    # Only update cache when we got real data; keep old cache on failure
                     self._cached_energy = data.energy_info
                 elif self._cached_energy is not None:
                     # Restore cached value when energy fetch returned nothing
@@ -132,7 +132,7 @@ class DucoBoxCoordinator(DataUpdateCoordinator[DucoBoxData]):
                 data.nodes = self._cached_nodes
 
         except (TimeoutError, ServerTimeoutError) as err:
-            # Transient timeouts are normal — log at debug and return last known data
+            # Transient timeouts are normal; log at debug and return last known data
             # so the base class never raises an ERROR log for a single missed tick.
             _LOGGER.debug("Timeout fetching data from DucoBox: %s", err)
             if self.data is not None:

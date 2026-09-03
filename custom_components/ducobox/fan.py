@@ -12,7 +12,7 @@ from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from . import DucoBoxConfigEntry
 from .const import DOMAIN
 from .coordinator import DucoBoxCoordinator
-from .entity import DucoBoxEntity
+from .entity import DucoBoxEntity, make_via_device
 from .models import DucoBoxNodeData
 
 # Preset mode constants
@@ -186,7 +186,7 @@ class DucoBoxNodeFan(CoordinatorEntity[DucoBoxCoordinator], FanEntity):
             model=node.devtype,
             sw_version=node.swversion,
             serial_number=node.serialnb,
-            via_device=(DOMAIN, main_device_serial),
+            **make_via_device(coordinator, main_device_serial),
             configuration_url=f"http://{coordinator.config_entry.data[CONF_HOST]}",
         )
 
@@ -201,7 +201,7 @@ class DucoBoxNodeFan(CoordinatorEntity[DucoBoxCoordinator], FanEntity):
 
     @property
     def available(self) -> bool:
-        """Always available — show last known state instead of unavailable."""
+        """Always available; shows last known state instead of unavailable."""
         return True
 
     @property

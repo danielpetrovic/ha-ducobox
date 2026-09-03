@@ -32,7 +32,7 @@ from homeassistant.util.dt import UTC
 from . import DucoBoxConfigEntry
 from .const import DOMAIN, DUCOBOX_VENTILATION_MODES
 from .coordinator import DucoBoxCoordinator
-from .entity import DucoBoxEntity
+from .entity import DucoBoxEntity, make_via_device
 from .models import DucoBoxData, DucoBoxNodeData
 
 
@@ -376,7 +376,7 @@ class DucoBoxSensor(DucoBoxEntity, RestoreSensor):
 
     @property
     def available(self) -> bool:
-        """Always available — show last known value or unknown instead of unavailable."""
+        """Always available; shows last known value or unknown instead of unavailable."""
         return True
 
     @property
@@ -390,7 +390,7 @@ class DucoBoxSensor(DucoBoxEntity, RestoreSensor):
                 value = None
         if value is not None:
             self._last_value = value
-        # Also validate cached/restored value — stale invalid values can be
+        # Also validate cached/restored value; stale invalid values can be
         # persisted by RestoreSensor from a previous session before this fix.
         if opts and self._last_value is not None and self._last_value not in opts:
             self._last_value = None
@@ -450,7 +450,7 @@ class DucoBoxNodeSensor(CoordinatorEntity[DucoBoxCoordinator], RestoreSensor):
             model=node.devtype,
             sw_version=node.swversion,
             serial_number=node.serialnb,
-            via_device=(DOMAIN, main_device_serial),
+            **make_via_device(coordinator, main_device_serial),
             configuration_url=f"http://{coordinator.config_entry.data[CONF_HOST]}",
         )
 
@@ -496,7 +496,7 @@ class DucoBoxNodeSensor(CoordinatorEntity[DucoBoxCoordinator], RestoreSensor):
 
     @property
     def available(self) -> bool:
-        """Always available — show last known value or unknown instead of unavailable."""
+        """Always available; shows last known value or unknown instead of unavailable."""
         return True
 
     @property

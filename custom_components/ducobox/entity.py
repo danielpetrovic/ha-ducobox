@@ -3,11 +3,24 @@
 from __future__ import annotations
 
 from homeassistant.const import CONF_HOST
+from homeassistant.helpers import device_registry as dr
 from homeassistant.helpers.device_registry import CONNECTION_NETWORK_MAC, DeviceInfo
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
 from .const import DOMAIN
 from .coordinator import DucoBoxCoordinator
+
+_VIA_DEVICE_ID_SUPPORTED = "via_device_id" in DeviceInfo.__annotations__
+
+
+def make_via_device(coordinator: DucoBoxCoordinator, identifier: str) -> dict:
+    """Return via_device_id or via_device depending on the HA version."""
+    if _VIA_DEVICE_ID_SUPPORTED:
+        device = dr.async_get(coordinator.hass).async_get_device_by_identifier(
+            coordinator.config_entry.entry_id, (DOMAIN, identifier)
+        )
+        return {"via_device_id": device.id if device else None}
+    return {"via_device": (DOMAIN, identifier)}
 
 
 class DucoBoxEntity(CoordinatorEntity[DucoBoxCoordinator]):

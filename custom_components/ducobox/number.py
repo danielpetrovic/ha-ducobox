@@ -13,6 +13,7 @@ from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from . import DucoBoxConfigEntry
 from .const import DOMAIN
 from .coordinator import DucoBoxCoordinator
+from .entity import make_via_device
 from .models import DucoBoxNodeConfigParam, DucoBoxNodeData
 
 CONF_TEMP_OFFSET = "temp_offset"
@@ -494,7 +495,7 @@ class DucoBoxTemperatureOffsetNumber(
             model=node.devtype,
             sw_version=node.swversion,
             serial_number=node.serialnb,
-            via_device=(DOMAIN, main_device_serial),
+            **make_via_device(coordinator, main_device_serial),
             configuration_url=f"http://{coordinator.config_entry.data[CONF_HOST]}",
         )
 
@@ -599,7 +600,7 @@ class DucoBoxNodeConfigNumber(CoordinatorEntity[DucoBoxCoordinator], NumberEntit
             model=node.devtype,
             sw_version=node.swversion,
             serial_number=node.serialnb,
-            via_device=(DOMAIN, main_device_serial),
+            **make_via_device(coordinator, main_device_serial),
             configuration_url=f"http://{coordinator.config_entry.data[CONF_HOST]}",
         )
 
