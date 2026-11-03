@@ -1,6 +1,6 @@
 # DucoBox integration for Home Assistant
 
-[![hacs_badge](https://img.shields.io/badge/HACS-Default-41BDF5.svg)](https://github.com/hacs/integration)
+[![Open in Marketplace](https://my.home-assistant.io/badges/marketplace_repository.svg)](https://my.home-assistant.io/redirect/marketplace_repository/?owner=danielpetrovic&repository=ha-ducobox&category=integration)
 [![GitHub Release](https://img.shields.io/github/release/danielpetrovic/ha-ducobox.svg)](https://github.com/danielpetrovic/ha-ducobox/releases)
 [![License](https://img.shields.io/github/license/danielpetrovic/ha-ducobox.svg)](LICENSE)
 
@@ -145,30 +145,28 @@ If you experience issues, please [create a GitHub issue](https://github.com/dani
 
 ## Installation
 
-### Method 1: HACS (Recommended)
+### Method 1: Marketplace (Recommended)
 
-The integration is available in the HACS default repository:
+The integration is available in the Home Assistant Marketplace:
 
-1. Open HACS in your Home Assistant instance
-2. Go to "Integrations"
-3. Click "Explore & Download Repositories"
-4. Search for "DucoBox"
-5. Click "Download"
-6. Restart Home Assistant
+1. Go to **Settings** → **Marketplace**
+2. Search for "DucoBox"
+3. Click **Download**
 
-### Method 2: HACS Custom Repository (Alternative)
+> [!NOTE]
+> On Home Assistant 2026.10 and older, open HACS, go to Integrations, search for "DucoBox", click Download, and restart Home Assistant.
+
+### Method 2: Marketplace Custom Repository (Alternative)
 
 For development versions or testing pre-release features:
 
-1. Open HACS in your Home Assistant instance
-2. Go to "Integrations"
-3. Click the three dots in the top right corner
-4. Select "Custom repositories"
-5. Add this repository URL: `https://github.com/danielpetrovic/ha-ducobox`
-6. Select "Integration" as the category
-7. Click "Add"
-8. Search for "DucoBox" and install it
-9. Restart Home Assistant
+1. Go to **Settings** → **Marketplace**
+2. Click the three dots in the top right corner
+3. Select "Custom repositories"
+4. Add this repository URL: `https://github.com/danielpetrovic/ha-ducobox`
+5. Select "Integration" as the category
+6. Click "Add"
+7. Search for "DucoBox" and install it
 
 ### Method 3: Manual Installation
 
